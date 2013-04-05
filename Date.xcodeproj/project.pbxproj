@@ -602,6 +602,7 @@
 		E636B14716B235D4007FC3A8 /* reminderSettingContact@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "reminderSettingContact@2x.png"; sourceTree = "<group>"; };
 		E636B14D16B23721007FC3A8 /* deleteText.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = deleteText.png; sourceTree = "<group>"; };
 		E636B14E16B23721007FC3A8 /* deleteText@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "deleteText@2x.png"; sourceTree = "<group>"; };
+		E63E1E5C170EA9BB0029685D /* Keyword.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Keyword.h; sourceTree = "<group>"; };
 		E68A7FEE16AE3C7200DCA6E1 /* bigDog.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = bigDog.wav; sourceTree = "<group>"; };
 		E68A7FEF16AE3C7200DCA6E1 /* milkCat.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = milkCat.wav; sourceTree = "<group>"; };
 		E68A7FF016AE3C7200DCA6E1 /* nightingale.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = nightingale.wav; sourceTree = "<group>"; };
@@ -729,8 +730,6 @@
 		3C13E870164DF4DB006424A2 /* Date */ = {
 			isa = PBXGroup;
 			children = (
-				E6C8EEDF16D9BD8300BBDE5E /* PPRevealSideViewController.h */,
-				E6C8EEE016D9BD8300BBDE5E /* PPRevealSideViewController.m */,
 				3C84B3E416C150D6007303F6 /* UMeng */,
 				3C5B1D6D16A10B8F0079C12F /* UIControl */,
 				3C0DC304165CB18900355619 /* Hud */,
@@ -907,16 +906,17 @@
 		3CE0ABF416507B50004B785A /* DataStore */ = {
 			isa = PBXGroup;
 			children = (
+				E63E1E5C170EA9BB0029685D /* Keyword.h */,
 				3C84B3F516C232C1007303F6 /* Reminder.h */,
 				3C84B3F616C232C1007303F6 /* Reminder.m */,
+				3CB0DC371655E05000209DF6 /* ReminderManager.h */,
+				3CB0DC381655E05000209DF6 /* ReminderManager.m */,
 				3C40DE3C1666ED49005627C9 /* BilateralFriend.h */,
 				3C40DE3D1666ED49005627C9 /* BilateralFriend.m */,
 				3CE0ABF516507BD4004B785A /* UserManager.h */,
 				3CE0ABF616507BD4004B785A /* UserManager.m */,
 				3CE0AC5C1650F521004B785A /* BilateralFriendManager.h */,
 				3CE0AC5D1650F521004B785A /* BilateralFriendManager.m */,
-				3CB0DC371655E05000209DF6 /* ReminderManager.h */,
-				3CB0DC381655E05000209DF6 /* ReminderManager.m */,
 			);
 			name = DataStore;
 			path = ..;
@@ -1062,6 +1062,10 @@
 		3CE0AC541650D5C3004B785A /* Class */ = {
 			isa = PBXGroup;
 			children = (
+				E63E1E5E170EB3EE0029685D /* 提醒主界面 */,
+				E63E1E5D170EAFD20029685D /* 左侧导航菜单 */,
+				E63E1E5A170E9CE00029685D /* 修改提醒主界面 */,
+				E63E1E5B170E9D3F0029685D /* 修改提醒时间 */,
 				3CFCCC0316AA499C002AC474 /* AboutUsViewController.h */,
 				3CFCCC0416AA499D002AC474 /* AboutUsViewController.m */,
 				3C93849516882BD800DA6412 /* AudioReminderSettingViewController.h */,
@@ -1074,10 +1078,6 @@
 				3CC9CE20165F730100E7E9D9 /* FriendRemindersViewController.h */,
 				3CC9CE21165F730100E7E9D9 /* FriendRemindersViewController.m */,
 				3C351392169AC9AD00F78FB9 /* GlobalFunction */,
-				3C19884F16982974002311E5 /* ModifyAudioReminderViewController.h */,
-				3C19885016982975002311E5 /* ModifyAudioReminderViewController.m */,
-				3C198846169804DA002311E5 /* ModifyTextReminderViewController.h */,
-				3C198847169804DA002311E5 /* ModifyTextReminderViewController.m */,
 				3C19884C16982422002311E5 /* NewAudioReminderViewController.h */,
 				3C19884D16982422002311E5 /* NewAudioReminderViewController.m */,
 				3C19884916980CF9002311E5 /* NewTextReminderViewController.h */,
@@ -1094,12 +1094,8 @@
 				3CF017DF165B500E00F83814 /* ReminderSendingViewController.m */,
 				3C044CC9165A0E1B000551C5 /* ReminderSettingViewController.h */,
 				3C044CCA165A0E1B000551C5 /* ReminderSettingViewController.m */,
-				3C349927166EEF62001012B6 /* RemindersInboxViewController.h */,
-				3C349928166EEF62001012B6 /* RemindersInboxViewController.m */,
 				3C40DE3F16670F41005627C9 /* RemindersNotificationViewController.h */,
 				3C40DE4016670F41005627C9 /* RemindersNotificationViewController.m */,
-				3C3BE6B1168A83F40052A8C5 /* ReminderTimeSettingViewController.h */,
-				3C3BE6B2168A83F40052A8C5 /* ReminderTimeSettingViewController.m */,
 				E68A7FF416AE5A2000DCA6E1 /* SettingAlertSoundViewController.h */,
 				E68A7FF516AE5A2000DCA6E1 /* SettingAlertSoundViewController.m */,
 				3C719E1C169E493B00EECCB0 /* SettingAppBadgeViewController.h */,
@@ -1182,6 +1178,44 @@
 				3CF83C17166DF889005ED593 /* libSinaWeiboLibrary.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E63E1E5A170E9CE00029685D /* 修改提醒主界面 */ = {
+			isa = PBXGroup;
+			children = (
+				3C198846169804DA002311E5 /* ModifyTextReminderViewController.h */,
+				3C198847169804DA002311E5 /* ModifyTextReminderViewController.m */,
+				3C19884F16982974002311E5 /* ModifyAudioReminderViewController.h */,
+				3C19885016982975002311E5 /* ModifyAudioReminderViewController.m */,
+			);
+			name = "修改提醒主界面";
+			sourceTree = "<group>";
+		};
+		E63E1E5B170E9D3F0029685D /* 修改提醒时间 */ = {
+			isa = PBXGroup;
+			children = (
+				3C3BE6B1168A83F40052A8C5 /* ReminderTimeSettingViewController.h */,
+				3C3BE6B2168A83F40052A8C5 /* ReminderTimeSettingViewController.m */,
+			);
+			name = "修改提醒时间";
+			sourceTree = "<group>";
+		};
+		E63E1E5D170EAFD20029685D /* 左侧导航菜单 */ = {
+			isa = PBXGroup;
+			children = (
+				E6C8EEDF16D9BD8300BBDE5E /* PPRevealSideViewController.h */,
+				E6C8EEE016D9BD8300BBDE5E /* PPRevealSideViewController.m */,
+			);
+			name = "左侧导航菜单";
+			sourceTree = "<group>";
+		};
+		E63E1E5E170EB3EE0029685D /* 提醒主界面 */ = {
+			isa = PBXGroup;
+			children = (
+				3C349927166EEF62001012B6 /* RemindersInboxViewController.h */,
+				3C349928166EEF62001012B6 /* RemindersInboxViewController.m */,
+			);
+			name = "提醒主界面";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1734,7 +1768,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: WANWEI LIU (5Y6RV2MD2B)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: WANWEI LIU (5Y6RV2MD2B)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Date/Date-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1757,7 +1792,8 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "8943D085-22C4-4891-A9CA-97E205FAAA6F";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "8943D085-22C4-4891-A9CA-97E205FAAA6F";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7s armv7";
 				WRAPPER_EXTENSION = app;
@@ -1768,7 +1804,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: WANWEI LIU (5Y6RV2MD2B)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: WANWEI LIU (5Y6RV2MD2B)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Date/Date-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -1791,7 +1828,8 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "8943D085-22C4-4891-A9CA-97E205FAAA6F";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "8943D085-22C4-4891-A9CA-97E205FAAA6F";
 				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7s armv7";
 				WRAPPER_EXTENSION = app;

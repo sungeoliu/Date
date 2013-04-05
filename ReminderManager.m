@@ -12,6 +12,7 @@
 #import "SoundManager.h"
 #import "AppDelegate.h"
 #import "GlobalFunction.h"
+#import "Keyword.h"
 
 static ReminderManager * sReminderManager;
 
@@ -179,43 +180,50 @@ typedef enum {
     [self futureReminders];
 }
 
+#define DECREASE_WITH_SAFETY(x)     if(x > 0){ x--;}
+
 - (void)updateRemindersSizeWith:(NSDate *)triggerTime withOperate:(BadgeOperate)operate {
     NSDate * today = [NSDate date];
     NSDate * tomorrow;
     NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"yyyy-MM-dd"];
+    
+    // 获取今天、明天零点零分零秒时刻。
     today = [formatter dateFromString:[formatter stringFromDate:today]];
     tomorrow = [today dateByAddingTimeInterval:24*60*60];
 
     if (nil == triggerTime) {
+        // 收集箱中的提醒。
         if (BadgeOperateAdd == operate) {
             _draftRemindersSize++;
-        }else if (BadgeOperateSub == operate && 0 != _draftRemindersSize) {
-            _draftRemindersSize--;
+        }else if (BadgeOperateSub == operate) {
+            DECREASE_WITH_SAFETY(_draftRemindersSize);
         }
     }else {
-        BOOL sign = NO;
+        // 不属于收集箱的提醒。
+        BOOL isToday = NO;
         if ([triggerTime compare:tomorrow] == NSOrderedAscending) {
-            sign = YES;
+            isToday = YES;
         }
         
         if (BadgeOperateAdd == operate) {
-            if (YES == sign) {
+            if (YES == isToday) {
                 _todayRemindersSize ++;
             }else {
-                _futureRemindersSize++;            }
+                _futureRemindersSize++;
+            }
         }else if (BadgeOperateSub == operate) {
-            if (YES == sign && 0 != _todayRemindersSize) {
-                _todayRemindersSize --;
-                
+            if (YES == isToday) {
+                DECREASE_WITH_SAFETY(_todayRemindersSize);
             }else {
-                if (0 != _futureRemindersSize) {
-                    _futureRemindersSize --;
-                }
+                DECREASE_WITH_SAFETY(_futureRemindersSize);
             }
             
         }
     }
+    
+    // 通知界面提醒数量有变动。
+    [self reminderSizeChanged];
     
     [self updateAppBadge];
 }
@@ -223,16 +231,18 @@ typedef enum {
 - (void)updateRemindersSizeWithOriTime:(NSDate *)oriTriggerTime withNowTime:(NSDate *)nowTriggerTime withType:(ReminderType)type{
     if (ReminderTypeSend == type) {
         if (nil == oriTriggerTime) {
-             _draftRemindersSize--;
+            DECREASE_WITH_SAFETY(_draftRemindersSize);
         }else {
             NSDate * tomorrow = [[GlobalFunction defaultInstance] tomorrow];
             if ([oriTriggerTime compare:tomorrow] == NSOrderedAscending) {
-                _todayRemindersSize --;
+                DECREASE_WITH_SAFETY(_todayRemindersSize);
             }
             _futureRemindersSize++;
         }
     }else {
+        // 旧提醒计数减一。
         [self updateRemindersSizeWith:oriTriggerTime withOperate:BadgeOperateSub];
+        // 新提醒计数加一。
         [self updateRemindersSizeWith:nowTriggerTime withOperate:BadgeOperateAdd];
     }
 }
@@ -616,6 +626,13 @@ typedef enum {
     }
 }
 
+// 发送“提醒个数改变”消息。
+- (void)reminderSizeChanged{
+    NSLog(@"发送提醒数更新消息");
+    [[NSNotificationCenter defaultCenter] postNotificationName:kReminderSizeChanged object:nil];
+}
+
+// 修改提醒已读状态。
 - (void)modifyReminder:(Reminder *)reminder withReadState:(BOOL)isRead {
     reminder.isRead = [NSNumber numberWithBool:isRead];
     [self synchroniseToStore];
@@ -627,11 +644,13 @@ typedef enum {
     [[NSNotificationCenter defaultCenter] postNotification:notification];
 }
 
+// 修改提醒是否闹铃状态。
 - (void)modifyReminder:(Reminder *)reminder withBellState:(BOOL)isBell {
     reminder.isAlarm = [NSNumber numberWithBool:isBell];
     [self synchroniseToStore];
 }
 
+// 修改提醒内容。
 - (void)modifyReminder:(Reminder *)reminder withState:(ReminderState)state {
     reminder.state = [NSNumber numberWithInteger:state];
     if (ReminderStateFinish == state) {
@@ -655,6 +674,7 @@ typedef enum {
     
 }
 
+// 修改提醒类型。
 - (void)modifyReminder:(Reminder *)reminder withType:(ReminderType)type {
     reminder.type = [NSNumber numberWithInteger:type];
     [self synchroniseToStore];

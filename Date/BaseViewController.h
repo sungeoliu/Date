@@ -10,7 +10,6 @@
 
 @interface BaseViewController : UIViewController
 
-- (IBAction)leftBarBtnTapped:(id)sender;
 - (void)restoreViewLocation;
 - (void)initMenuButton;
 

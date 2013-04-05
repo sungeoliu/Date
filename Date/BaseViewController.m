@@ -100,16 +100,4 @@
     // Dispose of any resources that can be recreated.
 }
 
-// 弹出左侧菜单。
-- (IBAction)leftBarBtnTapped:(id)sender {
-    MenuViewController * menuVC = [AppDelegate delegate].menuViewController;
-    PPRevealSideViewController * revealVC = [[AppDelegate delegate] revealSideViewController];
-    [revealVC pushViewController:menuVC onDirection:PPRevealSideDirectionLeft animated:YES];
-    
-    RemindersInboxViewController * rib = [AppDelegate delegate].ribViewController;
-    
-    // 启用PPReavealSideViewController提供的手势，禁用rib提供的手势。
-    rib.shouldDeactiveGesture = NO;
-}
-
 @end
