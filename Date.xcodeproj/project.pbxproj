@@ -1066,10 +1066,7 @@
 				E63E1E5D170EAFD20029685D /* 左侧导航菜单 */,
 				E63E1E5A170E9CE00029685D /* 修改提醒主界面 */,
 				E63E1E5B170E9D3F0029685D /* 修改提醒时间 */,
-				3CFCCC0316AA499C002AC474 /* AboutUsViewController.h */,
-				3CFCCC0416AA499D002AC474 /* AboutUsViewController.m */,
-				3C93849516882BD800DA6412 /* AudioReminderSettingViewController.h */,
-				3C93849616882BD800DA6412 /* AudioReminderSettingViewController.m */,
+				E63E1E5F170ECD120029685D /* 新建提醒 */,
 				3C3156631681AE4000C1E42C /* BaseViewController.h */,
 				3C3156641681AE4000C1E42C /* BaseViewController.m */,
 				3CC9CE25165F768D00E7E9D9 /* Cell */,
@@ -1078,12 +1075,10 @@
 				3CC9CE20165F730100E7E9D9 /* FriendRemindersViewController.h */,
 				3CC9CE21165F730100E7E9D9 /* FriendRemindersViewController.m */,
 				3C351392169AC9AD00F78FB9 /* GlobalFunction */,
-				3C19884C16982422002311E5 /* NewAudioReminderViewController.h */,
-				3C19884D16982422002311E5 /* NewAudioReminderViewController.m */,
-				3C19884916980CF9002311E5 /* NewTextReminderViewController.h */,
-				3C19884A16980CF9002311E5 /* NewTextReminderViewController.m */,
 				3CB275111654EAF400FAEF1F /* OnlineFriendsRemindViewController.h */,
 				3CB275121654EAF400FAEF1F /* OnlineFriendsRemindViewController.m */,
+				3CFCCC0316AA499C002AC474 /* AboutUsViewController.h */,
+				3CFCCC0416AA499D002AC474 /* AboutUsViewController.m */,
 				3C3499361670509C001012B6 /* ReminderDetailViewController.h */,
 				3C3499371670509D001012B6 /* ReminderDetailViewController.m */,
 				3C044CD6165A8C57000551C5 /* ReminderMapViewController.h */,
@@ -1092,8 +1087,6 @@
 				3C23E8B31669ACA30098149A /* RemindersBaseViewController.m */,
 				3CF017DE165B500D00F83814 /* ReminderSendingViewController.h */,
 				3CF017DF165B500E00F83814 /* ReminderSendingViewController.m */,
-				3C044CC9165A0E1B000551C5 /* ReminderSettingViewController.h */,
-				3C044CCA165A0E1B000551C5 /* ReminderSettingViewController.m */,
 				3C40DE3F16670F41005627C9 /* RemindersNotificationViewController.h */,
 				3C40DE4016670F41005627C9 /* RemindersNotificationViewController.m */,
 				E68A7FF416AE5A2000DCA6E1 /* SettingAlertSoundViewController.h */,
@@ -1112,8 +1105,6 @@
 				E6A3980E16918D4F004A460F /* TextEditorViewController.m */,
 				3C9384A31689328A00DA6412 /* TextReminderDetailViewController.h */,
 				3C9384A41689328A00DA6412 /* TextReminderDetailViewController.m */,
-				3C9384901688292D00DA6412 /* TextReminderSettingViewController.h */,
-				3C9384911688292D00DA6412 /* TextReminderSettingViewController.m */,
 				3CFCCC0316AA499C002AC474 /* AboutUsViewController.h */,
 				3CFCCC0416AA499D002AC474 /* AboutUsViewController.m */,
 				3CD0ADFD166877C0001986F0 /* MenuViewController.h */,
@@ -1216,6 +1207,23 @@
 				3C349928166EEF62001012B6 /* RemindersInboxViewController.m */,
 			);
 			name = "提醒主界面";
+			sourceTree = "<group>";
+		};
+		E63E1E5F170ECD120029685D /* 新建提醒 */ = {
+			isa = PBXGroup;
+			children = (
+				3C19884C16982422002311E5 /* NewAudioReminderViewController.h */,
+				3C19884D16982422002311E5 /* NewAudioReminderViewController.m */,
+				3C19884916980CF9002311E5 /* NewTextReminderViewController.h */,
+				3C19884A16980CF9002311E5 /* NewTextReminderViewController.m */,
+				3C93849516882BD800DA6412 /* AudioReminderSettingViewController.h */,
+				3C93849616882BD800DA6412 /* AudioReminderSettingViewController.m */,
+				3C9384901688292D00DA6412 /* TextReminderSettingViewController.h */,
+				3C9384911688292D00DA6412 /* TextReminderSettingViewController.m */,
+				3C044CC9165A0E1B000551C5 /* ReminderSettingViewController.h */,
+				3C044CCA165A0E1B000551C5 /* ReminderSettingViewController.m */,
+			);
+			name = "新建提醒";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

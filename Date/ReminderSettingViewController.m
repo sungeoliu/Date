@@ -53,7 +53,7 @@
     ReminderSettingViewController * controller;
     NSString * audioPath = reminder.audioUrl;
     UserManager * userManager = [UserManager defaultManager];
-    if (DataTypeHistory == type ||
+    if (DateTypeHistory == type ||
         (NO == [userManager isOneself:[reminder.userID stringValue]] && nil != reminder.triggerTime)) {
         if (nil == audioPath || [audioPath isEqualToString:@""]) {
             controller = [[ShowTextReminderViewController alloc] initWithNibName:@"TextReminderSettingViewController" bundle:nil];
@@ -69,7 +69,7 @@
             controller = [[ModifyAudioReminderViewController alloc] initWithNibName:@"AudioReminderSettingViewController" bundle:nil];
         }
         
-        if (DataTypeCollectingBox == type) {
+        if (DateTypeCollectingBox == type) {
             controller.isInbox = YES;
         }else {
             controller.isInbox = NO;
@@ -277,7 +277,7 @@
 }
 
 - (void)initTriggerTime {
-    if (DataTypeToday == self.dateType || DataTypeRecent == self.dateType) {
+    if (DateTypeToday == self.dateType || DateTypeRecent == self.dateType) {
         NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
         NSString * strTriggerTime;
         [formatter setDateFormat:@"yyyy-MM-dd 23:59:59"];

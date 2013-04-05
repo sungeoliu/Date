@@ -34,6 +34,7 @@
     self.receiverId = [NSNumber numberWithLongLong:[[UserManager defaultManager].oneselfId longLongValue]];
     self.receiver = @"自己";
     self.reminderType = ReminderTypeReceiveAndNoAlarm;
+    self.dateType = DateTypeToday;
     [self initTriggerTime];
 }
 
@@ -89,7 +90,7 @@
         target = kUMengEventReminderParamSelf;
         type = kUMengEventReminderParamNoAlarm;
         date = kUMengEventReminderParamCollectingBox;
-        [AppDelegate delegate].ribViewController.dataType = DataTypeCollectingBox;
+        [AppDelegate delegate].ribViewController.dataType = DateTypeCollectingBox;
     }else {
         if (YES == [self.userManager isOneself:[self.reminder.userID stringValue]]) {
             target = kUMengEventReminderParamSelf;
@@ -105,10 +106,10 @@
         NSDate * tommrow = [[GlobalFunction defaultInstance] tomorrow];
         if ([self.reminder.triggerTime compare:tommrow] == NSOrderedAscending) {
             date = kUMengEventReminderParamToady;
-            [AppDelegate delegate].ribViewController.dataType = DataTypeToday;
+            [AppDelegate delegate].ribViewController.dataType = DateTypeToday;
         }else {
             date = kUMengEventReminderParamOtherDay;
-            [AppDelegate delegate].ribViewController.dataType = DataTypeRecent;
+            [AppDelegate delegate].ribViewController.dataType = DateTypeRecent;
         }
     }
     

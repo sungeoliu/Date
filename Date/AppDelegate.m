@@ -315,7 +315,7 @@
     [_ribViewController initDataWithAnimation:NO];
     
     if (buttonIndex == 0) {
-        ReminderSettingViewController * controller = [ReminderSettingViewController createController:_alertedReminder withDateType:DataTypeToday];
+        ReminderSettingViewController * controller = [ReminderSettingViewController createController:_alertedReminder withDateType:DateTypeToday];
         UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:controller];
         [[GlobalFunction defaultInstance] customizeNavigationBar:nav.navigationBar];
         [_navController presentViewController:nav animated:YES completion:nil];

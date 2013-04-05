@@ -220,7 +220,8 @@ typedef enum {
     
     _lastIndexPath = indexPath;
     
-    uint types[] = {DataTypeCollectingBox,DataTypeToday, DataTypeRecent, DataTypeHistory};
+    // TODO: 毛宇是猪。
+    uint types[] = {DateTypeCollectingBox,DateTypeToday, DateTypeRecent, DateTypeHistory};
     if ([AppDelegate delegate].ribViewController.dataType != types[indexPath.row]) {
         [AppDelegate delegate].ribViewController.dataType = types[indexPath.row];
         [[AppDelegate delegate].ribViewController initDataWithAnimation:YES];

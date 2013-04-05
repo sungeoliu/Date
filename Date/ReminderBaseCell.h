@@ -22,10 +22,11 @@ typedef enum {
 }AudioState;
 
 typedef enum {
-    DataTypeCollectingBox = 0,
-    DataTypeToday = 1,
-    DataTypeRecent = 2,
-    DataTypeHistory
+    DateTypeCollectingBox = 0,
+    DateTypeToday = 1,
+    DateTypeRecent = 2,
+    DateTypeHistory = 3,
+    DateTypeSpecific = 4        // 特定时间。
 }DataType;
 
 typedef enum {

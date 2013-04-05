@@ -35,7 +35,7 @@
 {
     [self initData];
     [super viewDidLoad];
-    if (DataTypeHistory != self.dateType) {
+    if (DateTypeHistory != self.dateType) {
         [self hiddenTableFooterView];
     }
     self.title = @"提醒详情";

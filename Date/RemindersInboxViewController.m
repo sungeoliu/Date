@@ -231,7 +231,7 @@
 
 // 设置手指划过cell后显示的替代cell。
 - (void)setSwipeView {
-    if (DataTypeHistory == _dateType) {
+    if (DateTypeHistory == _dateType) {
         // 历史界面用“恢复”菜单。
         _tableViewRecognizer.sideSwipeView = _swipeForRecoverView;
     }else {
@@ -247,20 +247,20 @@
     [self setSwipeView];
     [self addRefreshHeaderView];
     self.tableView.frame =CGRectMake(self.tableView.frame.origin.x, self.tableView.frame.origin.y, self.tableView.frame.size.width,self.view.frame.size.height - 44);
-    if (DataTypeToday == _dateType) {
+    if (DateTypeToday == _dateType) {
         self.title = kTodayReminder;
         self.reminders = [self.reminderManager todayUnFinishedReminders];
         [AppDelegate delegate].menuViewController.lastIndexPath = [NSIndexPath indexPathForRow:1 inSection:0];
         
-    }else if (DataTypeRecent == _dateType) {
+    }else if (DateTypeRecent == _dateType) {
         self.title = kFutureReminder;
         self.reminders = [self.reminderManager futureReminders];
         [AppDelegate delegate].menuViewController.lastIndexPath = [NSIndexPath indexPathForRow:2 inSection:0];
-    }else if (DataTypeCollectingBox == _dateType) {
+    }else if (DateTypeCollectingBox == _dateType) {
         self.title = LocalString(@"DraftBox");
         self.reminders = [self.reminderManager collectingBoxReminders];
         [AppDelegate delegate].menuViewController.lastIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
-    }else if (DataTypeHistory == _dateType) {
+    }else if (DateTypeHistory == _dateType) {
         self.title = kFinishedReminder;
         [self removeRefreshHeadView];
         [_viewBottomMenu setHidden:YES];
@@ -287,7 +287,7 @@
             [self.tableView beginUpdates];
         }
         for (Reminder * reminder in self.reminders) {
-            if (DataTypeHistory == _dateType) {
+            if (DateTypeHistory == _dateType) {
                 key = [formatter stringFromDate:reminder.finishedTime];
             }else if (nil == reminder.triggerTime) {
                 key = [formatter stringFromDate:reminder.createTime];
@@ -309,7 +309,7 @@
                     
                     indexSection ++;
                 }else {
-                    if (DataTypeHistory == _dateType) {
+                    if (DateTypeHistory == _dateType) {
                         [[self.group objectForKey:key] addObject:reminder];
                     }else if (nil == reminder.triggerTime) {
                         [[self.group objectForKey:key] insertObject:reminder atIndex:0];
@@ -371,7 +371,7 @@
 {
     [super viewDidLoad];
     _tableViewRecognizer = [self.tableView enableGestureTableViewWithDelegate:self];
-    _dateType = DataTypeToday;
+    _dateType = DateTypeToday;
     [self initMenuButton];
     [self initDataWithAnimation:YES];
     [self registerHandleMessage];
@@ -431,6 +431,11 @@
 }
 
 - (IBAction)showBottomMenuView:(id)sender {
+    if (! self.shouldDeactiveGesture) {
+        // 左侧菜单显示时，禁用。
+        return;
+    }
+    
     CGRect frameTableView;
     CGRect freamMenu;
     if (NO == _showBottomMenu) {
@@ -509,7 +514,7 @@
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    if (DataTypeToday != _dateType) {
+    if (DateTypeToday != _dateType) {
         return  [[GlobalFunction defaultInstance] custumDateString:[self.keys objectAtIndex:section] withShowDate:YES];
     }
     
@@ -561,23 +566,23 @@
     
     static NSString * CellIdentifier;
     ReminderBaseCell * cell;
-    if (DataTypeToday == _dateType) {
+    if (DateTypeToday == _dateType) {
         CellIdentifier = @"TodayReminderCell";
         cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (cell == nil) {
             cell = [[TodayReminderCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         }
-    }else if (DataTypeRecent == _dateType) {
+    }else if (DateTypeRecent == _dateType) {
         CellIdentifier = @"FutureReminderCell";
         cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (cell == nil) {
             cell = [[FutureReminderCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];}
-    }else if (DataTypeHistory == _dateType) {
+    }else if (DateTypeHistory == _dateType) {
         CellIdentifier = @"HistoryReminderCell";
         cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (cell == nil) {
             cell = [[HistoryReminderCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];}
-    }else if (DataTypeCollectingBox == _dateType) {
+    }else if (DateTypeCollectingBox == _dateType) {
         CellIdentifier = @"ReminderInboxCell";
         cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (cell == nil) {
