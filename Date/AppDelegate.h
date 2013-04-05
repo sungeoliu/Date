@@ -23,7 +23,7 @@
 @property (strong, nonatomic) PPRevealSideViewController * revealSideViewController;
 @property (strong, nonatomic) UINavigationController * navController;
 @property (strong, nonatomic) MenuViewController * menuViewController;
-@property (strong, nonatomic) RemindersInboxViewController * homeViewController;
+@property (strong, nonatomic) RemindersInboxViewController * ribViewController;
 
 - (void)saveContext;
 - (NSURL *)applicationDocumentsDirectory;

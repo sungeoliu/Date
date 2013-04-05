@@ -345,12 +345,22 @@
     [self initView];
     [self setSwipeView];
     [self performSelector:@selector(computeRemindersSize) withObject:self afterDelay:0.5];
-//    if (YES == [_sinaWeiboManager.sinaWeibo isAuthValid]) {
-//        [_sinaWeiboManager requestBilateralFriends];
-//        [[BilateralFriendManager defaultManager] checkRegisteredFriendsRequest];
-//        [self registerForRemoteNotification];
-//    }
-    
+
+    [AppDelegate delegate].revealSideViewController.delegate = self;
+    self.shouldDeactiveGesture = YES;
+}
+
+#pragma mark PPRevealSideViewControllerDelegate
+- (BOOL)pprevealSideViewController:(PPRevealSideViewController *)controller shouldDeactivateGesture:(UIGestureRecognizer *)gesture forView:(UIView *)view{
+    NSLog(@"是否禁用手势: %d", self.shouldDeactiveGesture);
+    return self.shouldDeactiveGesture;
+}
+
+- (void)pprevealSideViewController:(PPRevealSideViewController *)controller willPopToController:(UIViewController *)centerController{
+    NSLog(@"will pop to: %@", centerController.title);
+    if (centerController == self) {
+        self.shouldDeactiveGesture = YES;
+    }
 }
 
 - (void)checkParent:(NSString *)msg{

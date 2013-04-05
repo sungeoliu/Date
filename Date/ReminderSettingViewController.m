@@ -122,7 +122,7 @@
 
 - (void)restoreReminder {
     [self.reminderManager modifyReminder:_reminder withState:ReminderStateUnFinish];
-    [[AppDelegate delegate].homeViewController initDataWithAnimation:NO];
+    [[AppDelegate delegate].ribViewController initDataWithAnimation:NO];
     [self.navigationController popViewControllerAnimated:YES];
 }
 

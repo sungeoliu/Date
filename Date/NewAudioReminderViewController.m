@@ -88,7 +88,7 @@
         target = kUMengEventReminderParamSelf;
         type = kUMengEventReminderParamNoAlarm;
         date = kUMengEventReminderParamCollectingBox;
-        [AppDelegate delegate].homeViewController.dataType = DataTypeCollectingBox;
+        [AppDelegate delegate].ribViewController.dataType = DataTypeCollectingBox;
     }else {
         if (YES == [self.userManager isOneself:[self.reminder.userID stringValue]]) {
             target = kUMengEventReminderParamSelf;
@@ -104,17 +104,17 @@
         NSDate * tommrow = [[GlobalFunction defaultInstance] tomorrow];
         if ([self.reminder.triggerTime compare:tommrow] == NSOrderedAscending) {
             date = kUMengEventReminderParamToady;
-            [AppDelegate delegate].homeViewController.dataType = DataTypeToday;
+            [AppDelegate delegate].ribViewController.dataType = DataTypeToday;
         }else {
             date = kUMengEventReminderParamOtherDay;
-            [AppDelegate delegate].homeViewController.dataType = DataTypeRecent;
+            [AppDelegate delegate].ribViewController.dataType = DataTypeRecent;
         }
     }
     
     NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:date,kUMengEventReminderParamDate,type, kUMengEventReminderParamType, target, kUMengEventReminderParamTarget, nil];
     [MobClick event:event attributes:dict];
     
-    [[AppDelegate delegate].homeViewController initDataWithAnimation:NO];
+    [[AppDelegate delegate].ribViewController initDataWithAnimation:NO];
     
     
     [self dissmissSettingView];

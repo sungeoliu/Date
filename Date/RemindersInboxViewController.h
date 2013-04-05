@@ -11,13 +11,14 @@
 #import "EGORefreshTableHeaderView.h"
 #import "InsetsTextField.h"
 #import "JTTableViewGestureRecognizer.h"
+#import "PPRevealSideViewController.h"
 
 typedef enum {
     InfoModeAudio = 0,
     InfoModeText
 }InfoMode;
 
-@interface RemindersInboxViewController : RemindersBaseViewController<UITextFieldDelegate,EGORefreshTableHeaderDelegate, UIAlertViewDelegate,MYTableViewGestureSwipeRowDelegate>
+@interface RemindersInboxViewController : RemindersBaseViewController<UITextFieldDelegate,EGORefreshTableHeaderDelegate, UIAlertViewDelegate,MYTableViewGestureSwipeRowDelegate, PPRevealSideViewControllerDelegate>
 
 @property (nonatomic) DataType dataType;
 @property (weak, nonatomic) IBOutlet UIButton * btnMode;
@@ -27,6 +28,8 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet UIView * toolbarView;
 @property (weak, nonatomic) IBOutlet UILabel * labelPrompt;
 @property (weak, nonatomic) IBOutlet UIView * viewBottomMenu;
+
+@property (nonatomic) BOOL shouldDeactiveGesture;
 
 - (IBAction)startRecord:(id)sender;
 - (IBAction)stopRecord:(id)sender;

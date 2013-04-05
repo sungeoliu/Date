@@ -17,6 +17,7 @@
 #import "GlobalFunction.h"
 #import "AboutUsViewController.h"
 #import "SettingViewController.h"
+#import "Keyword.h"
 
 typedef enum {
     MenuCellTagTitle = 1,
@@ -62,6 +63,11 @@ typedef enum {
     }
 }
 
+- (void)reloadReminderSize{
+    NSLog(@"刷新提醒分类个数。");
+    [self.tableView reloadData];
+}
+
 #pragma 事件函数
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -84,7 +90,8 @@ typedef enum {
 //    self.tableView.rowHeight = 50.0;
     _lastIndexPath = [NSIndexPath indexPathForRow:1 inSection:0];
     [self.tableView selectRowAtIndexPath:_lastIndexPath animated:NO scrollPosition:0];
-
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadReminderSize) name:kReminderSizeChanged object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -214,12 +221,16 @@ typedef enum {
     _lastIndexPath = indexPath;
     
     uint types[] = {DataTypeCollectingBox,DataTypeToday, DataTypeRecent, DataTypeHistory};
-    if ([AppDelegate delegate].homeViewController.dataType != types[indexPath.row]) {
-        [AppDelegate delegate].homeViewController.dataType = types[indexPath.row];
-        [[AppDelegate delegate].homeViewController initDataWithAnimation:YES];
+    if ([AppDelegate delegate].ribViewController.dataType != types[indexPath.row]) {
+        [AppDelegate delegate].ribViewController.dataType = types[indexPath.row];
+        [[AppDelegate delegate].ribViewController initDataWithAnimation:YES];
     }
     
-    [[AppDelegate delegate].homeViewController restoreViewLocation];
+    RemindersInboxViewController * rib = [AppDelegate delegate].ribViewController;
+    [rib restoreViewLocation];
+    
+    // 禁用PPReavealSideViewController提供的手势，使用rib提供的手势。
+    rib.shouldDeactiveGesture = YES;
 }
 
 @end

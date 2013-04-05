@@ -101,7 +101,7 @@ typedef enum {
 #pragma mark - ReminderManager delegate
 - (void)newReminderSuccess:(NSString *)reminderId {
     [super newReminderSuccess:reminderId];
-    [[AppDelegate delegate].homeViewController initDataWithAnimation:NO];
+    [[AppDelegate delegate].ribViewController initDataWithAnimation:NO];
     
     [self dissmissSettingView];
 }

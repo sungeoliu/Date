@@ -9,6 +9,7 @@
 #import "BaseViewController.h"
 #import "AppDelegate.h"
 #import "PPRevealSideViewController.h"
+#import "RemindersInboxViewController.h"
 
 @interface BaseViewController ()
 
@@ -99,21 +100,16 @@
     // Dispose of any resources that can be recreated.
 }
 
+// 弹出左侧菜单。
 - (IBAction)leftBarBtnTapped:(id)sender {
     MenuViewController * menuVC = [AppDelegate delegate].menuViewController;
     PPRevealSideViewController * revealVC = [[AppDelegate delegate] revealSideViewController];
     [revealVC pushViewController:menuVC onDirection:PPRevealSideDirectionLeft animated:YES];
     
+    RemindersInboxViewController * rib = [AppDelegate delegate].ribViewController;
     
-    return;
-   
-    if (menuVC.view.hidden) {
-        menuVC.view.hidden = NO;
-    }
-    
-    [menuVC.tableView reloadData];
-    
-    [self moveToRightSide];
+    // 启用PPReavealSideViewController提供的手势，禁用rib提供的手势。
+    rib.shouldDeactiveGesture = NO;
 }
 
 @end

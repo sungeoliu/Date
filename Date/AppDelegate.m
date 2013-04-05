@@ -36,7 +36,7 @@
 @synthesize navController = _navController;
 @synthesize menuViewController = _menuViewController;
 @synthesize window = _window;
-@synthesize homeViewController = _homeViewController;
+@synthesize ribViewController = _ribViewController;
 @synthesize revealSideViewController = _revealSideViewController;
 
 #pragma 私有函数
@@ -51,7 +51,7 @@
     viewController.reminder = reminder;
     viewController.friend = [[BilateralFriendManager defaultManager] bilateralFriendWithUserID:viewController.reminder.userID];
     viewController.detailViewShowMode = DeailViewShowModePresent;
-    viewController.parentController = _homeViewController;
+    viewController.parentController = _ribViewController;
     UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:viewController];
     [_navController presentViewController:nav animated:YES completion:nil];
 }
@@ -116,8 +116,8 @@
     [[SinaWeiboManager defaultManager] initSinaWeibo];
     [[ReminderManager defaultManager] createDefaultReminders];
     
-    _homeViewController = [[RemindersInboxViewController alloc] initWithNibName:@"RemindersInboxViewController" bundle:nil];
-    _navController = [[UINavigationController alloc] initWithRootViewController:_homeViewController];
+    _ribViewController = [[RemindersInboxViewController alloc] initWithNibName:@"RemindersInboxViewController" bundle:nil];
+    _navController = [[UINavigationController alloc] initWithRootViewController:_ribViewController];
     
     _revealSideViewController = [[PPRevealSideViewController alloc] initWithRootViewController:_navController];
     
@@ -126,12 +126,9 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     _menuViewController = [[MenuViewController alloc] initWithNibName:@"MenuViewController" bundle:nil];
-//    _menuViewController.view.frame = CGRectMake(0, 20, 320, self.window.frame.size.height);
     
     self.window.rootViewController = _revealSideViewController;
-//    [self.window addSubview:_menuViewController.view];
-    
-//    _menuViewController.view.hidden = YES;
+
     [self.window makeKeyAndVisible];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -139,13 +136,6 @@
                                                object:nil];
     
     [MobClick startWithAppkey:kUMengAppKey];
-
-    
-    /*UILocalNotification *localNotif =
-    [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-    if (localNotif) {
-        //NSString * reminderId = [localNotif.userInfo objectForKey:@"key"];
-    }*/
     
     return YES;
 }
@@ -322,7 +312,7 @@
     ReminderManager * manager = [ReminderManager defaultManager];
     Reminder * reminder = [manager reminderWithId:alertView.restorationIdentifier];
     [manager modifyReminder:reminder withBellState:YES];
-    [_homeViewController initDataWithAnimation:NO];
+    [_ribViewController initDataWithAnimation:NO];
     
     if (buttonIndex == 0) {
         ReminderSettingViewController * controller = [ReminderSettingViewController createController:_alertedReminder withDateType:DataTypeToday];
