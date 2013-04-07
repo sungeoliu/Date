@@ -34,6 +34,8 @@
 @property (nonatomic) ReminderType reminderType;
 @property (nonatomic) BOOL showSendFriendCell;
 @property (nonatomic, weak) IBOutlet UITableViewCell * textCell;
+@property (nonatomic) BOOL needSaveReminder;
+@property (nonatomic) BOOL isShowingExpiredReminder;
 
 + (ReminderSettingViewController *)createController:(Reminder *)reminder withDateType:(NSInteger)type;
 
@@ -55,4 +57,6 @@
 - (void)computeFontSize;
 - (void)initTriggerTime;
 - (void)dissmissSettingView;
+
+- (void)addActionEntrance;
 @end

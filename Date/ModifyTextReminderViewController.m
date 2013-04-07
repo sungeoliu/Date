@@ -90,6 +90,8 @@ typedef enum {
     [self hiddenTableFooterView];
 
     [[GlobalFunction defaultInstance] initNavleftBarItemWithController:self withAction:nil];
+    
+    [super addActionEntrance];
 }
 
 - (void)didReceiveMemoryWarning

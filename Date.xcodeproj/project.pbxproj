@@ -212,6 +212,9 @@
 		E636B14C16B235D4007FC3A8 /* reminderSettingContact@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E636B14716B235D4007FC3A8 /* reminderSettingContact@2x.png */; };
 		E636B14F16B23721007FC3A8 /* deleteText.png in Resources */ = {isa = PBXBuildFile; fileRef = E636B14D16B23721007FC3A8 /* deleteText.png */; };
 		E636B15016B23721007FC3A8 /* deleteText@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E636B14E16B23721007FC3A8 /* deleteText@2x.png */; };
+		E63E1E64170F0A840029685D /* ActionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E63E1E62170F0A840029685D /* ActionViewController.m */; };
+		E63E1E65170F0A840029685D /* ActionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E63E1E63170F0A840029685D /* ActionViewController.xib */; };
+		E63E1E6B170F17560029685D /* ExpiredReminderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E63E1E6A170F17560029685D /* ExpiredReminderManager.m */; };
 		E68A7FF116AE3C7200DCA6E1 /* bigDog.wav in Resources */ = {isa = PBXBuildFile; fileRef = E68A7FEE16AE3C7200DCA6E1 /* bigDog.wav */; };
 		E68A7FF216AE3C7200DCA6E1 /* milkCat.wav in Resources */ = {isa = PBXBuildFile; fileRef = E68A7FEF16AE3C7200DCA6E1 /* milkCat.wav */; };
 		E68A7FF316AE3C7200DCA6E1 /* nightingale.wav in Resources */ = {isa = PBXBuildFile; fileRef = E68A7FF016AE3C7200DCA6E1 /* nightingale.wav */; };
@@ -603,6 +606,11 @@
 		E636B14D16B23721007FC3A8 /* deleteText.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = deleteText.png; sourceTree = "<group>"; };
 		E636B14E16B23721007FC3A8 /* deleteText@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "deleteText@2x.png"; sourceTree = "<group>"; };
 		E63E1E5C170EA9BB0029685D /* Keyword.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Keyword.h; sourceTree = "<group>"; };
+		E63E1E61170F0A840029685D /* ActionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionViewController.h; sourceTree = "<group>"; };
+		E63E1E62170F0A840029685D /* ActionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActionViewController.m; sourceTree = "<group>"; };
+		E63E1E63170F0A840029685D /* ActionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ActionViewController.xib; sourceTree = "<group>"; };
+		E63E1E69170F17560029685D /* ExpiredReminderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExpiredReminderManager.h; sourceTree = "<group>"; };
+		E63E1E6A170F17560029685D /* ExpiredReminderManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExpiredReminderManager.m; sourceTree = "<group>"; };
 		E68A7FEE16AE3C7200DCA6E1 /* bigDog.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = bigDog.wav; sourceTree = "<group>"; };
 		E68A7FEF16AE3C7200DCA6E1 /* milkCat.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = milkCat.wav; sourceTree = "<group>"; };
 		E68A7FF016AE3C7200DCA6E1 /* nightingale.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = nightingale.wav; sourceTree = "<group>"; };
@@ -1067,6 +1075,7 @@
 				E63E1E5A170E9CE00029685D /* 修改提醒主界面 */,
 				E63E1E5B170E9D3F0029685D /* 修改提醒时间 */,
 				E63E1E5F170ECD120029685D /* 新建提醒 */,
+				E63E1E60170F0A460029685D /* 提醒操作菜单 */,
 				3C3156631681AE4000C1E42C /* BaseViewController.h */,
 				3C3156641681AE4000C1E42C /* BaseViewController.m */,
 				3CC9CE25165F768D00E7E9D9 /* Cell */,
@@ -1097,10 +1106,6 @@
 				3C719E22169E584600EECCB0 /* SettingSNSViewController.m */,
 				3C1CB0771679BA760025BDB2 /* SettingViewController.h */,
 				3C1CB0781679BA760025BDB2 /* SettingViewController.m */,
-				3C19885516983091002311E5 /* ShowAudioReminderViewController.h */,
-				3C19885616983091002311E5 /* ShowAudioReminderViewController.m */,
-				3C19885216982E13002311E5 /* ShowTextReminderViewController.h */,
-				3C19885316982E13002311E5 /* ShowTextReminderViewController.m */,
 				E6A3980D16918D4F004A460F /* TextEditorViewController.h */,
 				E6A3980E16918D4F004A460F /* TextEditorViewController.m */,
 				3C9384A31689328A00DA6412 /* TextReminderDetailViewController.h */,
@@ -1224,6 +1229,22 @@
 				3C044CCA165A0E1B000551C5 /* ReminderSettingViewController.m */,
 			);
 			name = "新建提醒";
+			sourceTree = "<group>";
+		};
+		E63E1E60170F0A460029685D /* 提醒操作菜单 */ = {
+			isa = PBXGroup;
+			children = (
+				E63E1E61170F0A840029685D /* ActionViewController.h */,
+				E63E1E62170F0A840029685D /* ActionViewController.m */,
+				E63E1E63170F0A840029685D /* ActionViewController.xib */,
+				E63E1E69170F17560029685D /* ExpiredReminderManager.h */,
+				E63E1E6A170F17560029685D /* ExpiredReminderManager.m */,
+				3C19885516983091002311E5 /* ShowAudioReminderViewController.h */,
+				3C19885616983091002311E5 /* ShowAudioReminderViewController.m */,
+				3C19885216982E13002311E5 /* ShowTextReminderViewController.h */,
+				3C19885316982E13002311E5 /* ShowTextReminderViewController.m */,
+			);
+			name = "提醒操作菜单";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1530,6 +1551,7 @@
 				E6F376DF16D56C0B00D6DD94 /* settings.png in Resources */,
 				E6C8EEC916D5CDDD00BBDE5E /* settings@2x.png in Resources */,
 				E6C8EECB16D6003500BBDE5E /* ZhiHuNavigationBar.png in Resources */,
+				E63E1E65170F0A840029685D /* ActionViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1618,6 +1640,8 @@
 				3C84B3F716C232C2007303F6 /* Reminder.m in Sources */,
 				3C4037E216D3263F0033249C /* FutureReminderCell.m in Sources */,
 				E6C8EEE116D9BD8300BBDE5E /* PPRevealSideViewController.m in Sources */,
+				E63E1E64170F0A840029685D /* ActionViewController.m in Sources */,
+				E63E1E6B170F17560029685D /* ExpiredReminderManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

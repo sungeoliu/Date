@@ -11,11 +11,17 @@
 #import "Reminder.h"
 #import "BilateralFriendManager.h"
 
+#define kReminderSettingOk          @"ReminderSettingOkMessage"
+#define kReminderDone               @"kReminderDone"
+#define kReminderDeleting           @"kReminderDeleting"
+
+#define kTriggerTime                @"kTriggerTime"
+#define kReminderObject             @"kReminderObject"
+
 typedef enum {
     ReminderTypeReceive = 0,
     ReminderTypeSend = 1,
-    ReminderTypeReceiveAndNoAlarm = 2,
-    ReminderTypeSendAndNoAlarm
+    ReminderTypeReceiveAndNoAlarm = 2,      // 日期提醒。
 }ReminderType;
 
 typedef enum {
@@ -54,7 +60,7 @@ typedef enum {
 - (Reminder *)reminderWithId:(NSString *) reminderId;
 
 - (void)saveSentReminder:(Reminder *)reminder;
-- (void)deleteReminder:(Reminder *)reminder;
+- (void)deleteLocalReminder:(Reminder *)reminder;
 - (void)modifyReminder:(Reminder *)reminder withTriggerTime:(NSDate *)triggerTime withDesc:(NSString *)desc withType:(ReminderType)type;
 
 - (NSMutableDictionary *)remindersWithId:(NSArray *) remindersId;
@@ -83,7 +89,7 @@ typedef enum {
 - (void)updateReminderReadStateRequest:(Reminder *)reminder withReadState:(BOOL)state;
 - (void)handleUpdateReminderReadStateResponse:(id)json withReminder:(Reminder *)reminder;
 
-- (void)deleteReminderRequest:(Reminder *)reminder;
+- (void)deleteRemoteReminder:(Reminder *)reminder;
 - (void)handleDeleteReminderResponse:(id)json withReminder:(Reminder *)reminder;
 
 - (void)addLocalNotificationWithReminder:(Reminder *)reminder;

@@ -29,6 +29,9 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet UILabel * labelPrompt;
 @property (weak, nonatomic) IBOutlet UIView * viewBottomMenu;
 
+// PPRevealSideViewController会给自己的rootViewController加上各种手势识别器（recognizer），
+// 当左侧菜单不显示时，这些recognizer会影响tableView对单击屏幕操作的识别，所以引入这个布尔值，
+// 当左侧菜单不显示时，禁用这些recognizer。
 @property (nonatomic) BOOL shouldDeactiveGesture;
 
 - (IBAction)startRecord:(id)sender;
@@ -37,8 +40,8 @@ typedef enum {
 - (IBAction)showBottomMenuView:(id)sender;
 
 - (IBAction)finishReminder:(id)sender;
-- (IBAction)deleteReminder:(id)sender;
-- (IBAction)recoverReminder:(id)sender;
+- (IBAction)deleteReminderIconClicked:(id)sender;
+- (IBAction)recoverReminderIconClicked:(id)sender;
 
 - (void)initDataWithAnimation:(BOOL)animation;
 

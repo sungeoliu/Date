@@ -90,7 +90,11 @@ typedef enum {
     [super viewDidLoad];
     [self updateTitle:TitleTypeShow];
     [self hiddenTableFooterView];
+    
+    // 创建默认的左侧按钮：“取消”或“返回”。
     [[GlobalFunction defaultInstance] initNavleftBarItemWithController:self withAction:nil];
+    
+    [super addActionEntrance];
 }
 
 - (void)didReceiveMemoryWarning

@@ -26,15 +26,14 @@
 @synthesize keys = _keys;
 
 #pragma 私有函数
-- (void)stopPlayingAudio {
-    [_soundManager stopAudio];
+- (void)audioStopped {
     ReminderBaseCell * cell = (ReminderBaseCell *)[self.tableView cellForRowAtIndexPath:_curIndexPath];
     cell.audioState = AudioStateNormal;
 }
 
 - (void)handleDownloadAudioFileResponse:(Reminder *)reminder withResult:(BOOL)result {
     if (nil != _curReminder && nil != _curIndexPath) {
-        [self stopPlayingAudio];
+        [self audioStopped];
         ReminderBaseCell * cell = (ReminderBaseCell *)[self.tableView cellForRowAtIndexPath:_curIndexPath];
         if (YES == result) {
             [cell palyAudio:nil];
@@ -92,7 +91,7 @@
 
 #pragma mark - SoundManager Delegate
 - (void)audioPlayerDidFinishPlaying {
-    [self stopPlayingAudio];
+    [self audioStopped];
 }
 
 - (void)alarmPlayerDidFinishPlaying {
@@ -102,7 +101,7 @@
 #pragma mark - FriendReminderCell Delegate
 - (void)clickAudioButton:(NSIndexPath *)indexPath withReminder:(Reminder *)reminder {
     if (nil != _curIndexPath && _curIndexPath != indexPath) {
-        [self stopPlayingAudio];
+        [self audioStopped];
     }
     _curIndexPath = indexPath;
     _curReminder = reminder;

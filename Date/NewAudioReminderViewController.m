@@ -91,7 +91,7 @@
         date = kUMengEventReminderParamCollectingBox;
         [AppDelegate delegate].ribViewController.dataType = DateTypeCollectingBox;
     }else {
-        if (YES == [self.userManager isOneself:[self.reminder.userID stringValue]]) {
+        if (YES == [self.userManager isSentToMyself:self.reminder.userID]) {
             target = kUMengEventReminderParamSelf;
         }else {
             target = kUMengEventReminderParamOthers;

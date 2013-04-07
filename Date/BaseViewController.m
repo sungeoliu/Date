@@ -53,8 +53,8 @@
                                                                            self.navigationController.view.frame.size.height);
                      }
                      completion:^(BOOL finished){
-                         UIControl *overView = (UIControl *)[[[UIApplication sharedApplication] keyWindow] viewWithTag:10086];
-                         [overView removeFromSuperview];
+//                         UIControl *overView = (UIControl *)[[[UIApplication sharedApplication] keyWindow] viewWithTag:10086];
+//                         [overView removeFromSuperview];
                          [AppDelegate delegate].menuViewController.view.hidden = YES;
                      }];
 }

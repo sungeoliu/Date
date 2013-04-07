@@ -59,7 +59,7 @@ typedef enum {
 - (void)stopAudio;
 - (void)deleteAudioFile:(NSString *)path;
 
-- (void)playAlarmVoice;
+- (void)playAlarmSound;
 - (void)playAlertSound:(NSString *)bundleSoundName;
 - (void)saveAlertSound:(NSString *)sound;
 - (NSString *)alertSoundTitleForType:(NSString *)type;

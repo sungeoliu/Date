@@ -9,8 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "ReminderSettingViewController.h"
 
-#define kReminderSettingOk          @"ReminderSettingOkMessage"
-
 @interface ReminderTimeSettingViewController : UIViewController<UITableViewDelegate, UITableViewDataSource>
 
 @property (weak, nonatomic) ReminderSettingViewController * parentContoller;

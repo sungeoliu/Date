@@ -41,28 +41,38 @@
 - (void)updateTime{
     NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
     NSString * strTriggerTime;
+    
+    int type = -1;
+    NSDate * triggerTime = nil;
     switch (_selectedRow) {
         case 2:
+            // 收集箱。
             _parentContoller.triggerTime = nil;
             _parentContoller.reminderType = ReminderTypeReceiveAndNoAlarm;
             break;
         case 0:
+            // 日期提醒。
             [formatter setDateFormat:@"yyyy-MM-dd 23:59:59"];
             strTriggerTime = [formatter stringFromDate:_datePick.date];
             [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-            _parentContoller.reminderType = ReminderTypeReceiveAndNoAlarm;
-            _parentContoller.triggerTime = [formatter dateFromString:strTriggerTime];
+            type = ReminderTypeReceiveAndNoAlarm;
+            triggerTime = [formatter dateFromString:strTriggerTime];
             break;
         case 1:
+            // 闹铃提醒。
             [formatter setDateFormat:@"yyyy-MM-dd HH:mm:00"];
             strTriggerTime = [formatter stringFromDate:_datePick.date];
-            _parentContoller.reminderType = ReminderTypeReceive;
-            _parentContoller.triggerTime = [formatter dateFromString:strTriggerTime];
+            type = ReminderTypeReceive;
+            triggerTime = [formatter dateFromString:strTriggerTime];
             break;
         default:
             break;
     }
-    [_parentContoller updateTriggerTimeCell];
+    
+    if (triggerTime != nil && type != -1) {
+        _parentContoller.reminderType = type;
+        _parentContoller.triggerTime = triggerTime;   
+    }
 }
 
 - (void)back {
@@ -168,6 +178,7 @@
     _dirty = YES;
 }
 
+// 修改提醒时间完成后，通过这个快捷方式按钮直接完成整个提醒的修改。
 - (void)done{
     [self updateTime];
     [[NSNotificationCenter defaultCenter] postNotificationName:kReminderSettingOk object:nil];

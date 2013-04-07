@@ -96,10 +96,11 @@
 }
 
 - (void)registerHandleMessage {
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleOnlineFriendsMessage:) name:kOnlineFriendsMessage object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleRemindersUpdateMessage:) name:kRemindesUpdateMessage
-                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleRemindersUpdateMessage:) name:kRemindesUpdateMessage object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleDoneReminderMessage:) name:kReminderDone object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleDeletingReminderMessage:) name:kReminderDeleting object:nil];
 }
 
 /*
@@ -247,20 +248,26 @@
     [self setSwipeView];
     [self addRefreshHeaderView];
     self.tableView.frame =CGRectMake(self.tableView.frame.origin.x, self.tableView.frame.origin.y, self.tableView.frame.size.width,self.view.frame.size.height - 44);
+    
+    MenuViewController * mv = [AppDelegate delegate].menuViewController;
+    
     if (DateTypeToday == _dateType) {
+        // 今日提醒。
         self.title = kTodayReminder;
         self.reminders = [self.reminderManager todayUnFinishedReminders];
-        [AppDelegate delegate].menuViewController.lastIndexPath = [NSIndexPath indexPathForRow:1 inSection:0];
-        
+        mv.lastIndexPath = [NSIndexPath indexPathForRow:1 inSection:0];
     }else if (DateTypeRecent == _dateType) {
+        // 未来提醒。
         self.title = kFutureReminder;
         self.reminders = [self.reminderManager futureReminders];
-        [AppDelegate delegate].menuViewController.lastIndexPath = [NSIndexPath indexPathForRow:2 inSection:0];
+        mv.lastIndexPath = [NSIndexPath indexPathForRow:2 inSection:0];
     }else if (DateTypeCollectingBox == _dateType) {
+        // 收集箱。
         self.title = LocalString(@"DraftBox");
         self.reminders = [self.reminderManager collectingBoxReminders];
-        [AppDelegate delegate].menuViewController.lastIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        mv.lastIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     }else if (DateTypeHistory == _dateType) {
+        // 已完成。
         self.title = kFinishedReminder;
         [self removeRefreshHeadView];
         [_viewBottomMenu setHidden:YES];
@@ -385,13 +392,13 @@
 
 #pragma mark PPRevealSideViewControllerDelegate
 - (BOOL)pprevealSideViewController:(PPRevealSideViewController *)controller shouldDeactivateGesture:(UIGestureRecognizer *)gesture forView:(UIView *)view{
-    NSLog(@"是否禁用手势: %@", self.shouldDeactiveGesture ? @"YES" : @"NO");
+//    NSLog(@"是否禁用手势: %@", self.shouldDeactiveGesture ? @"YES" : @"NO");
     return self.shouldDeactiveGesture;
 }
 
 - (void)pprevealSideViewController:(PPRevealSideViewController *)controller willPopToController:(UIViewController *)centerController{
     // 禁用手势。
-    NSLog(@"打开界面：%@", centerController.title);
+//    NSLog(@"打开界面：%@", centerController.title);
     self.shouldDeactiveGesture = YES;
 }
 
@@ -462,29 +469,54 @@
     }
 }
 
-- (IBAction)finishReminder:(id)sender {
-    if (nil != _curReminder) {
-        NSString * prompt = [[NSUserDefaults standardUserDefaults] objectForKey:NeedDisplayPromptKey];
-        if (nil == prompt || [prompt isEqualToString:@"YES"]) {
-            UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"您可以左侧菜单中找到已完成的任务" delegate:self cancelButtonTitle:@"关闭" otherButtonTitles:@"不再提示", nil];
-            [alert show];
-        }
-        
-        if ([_curReminder.state integerValue] == ReminderStateUnFinish) {
-            [self.reminderManager modifyReminder:_curReminder withState:ReminderStateFinish];
-        }
-        
-        [_tableViewRecognizer removeSideSwipeView:NO];
-        [[self.group objectForKey:[self.keys objectAtIndex:_curDeleteIndexPath.section]] removeObjectAtIndex:_curDeleteIndexPath.row];
-        [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_curDeleteIndexPath] withRowAnimation:UITableViewRowAnimationFade];
-        [self clearGroup];
-        
-        [self performSelector:@selector(reloadData) withObject:self afterDelay:0.2];
+// 收到完成消息处理。
+- (void)handleDoneReminderMessage:(NSNotification *)notification{
+    Reminder * reminder = [notification.userInfo objectForKey:kReminderObject];
+    if (reminder) {
+        [self doneForReminder:reminder];
     }
-    
 }
 
-- (IBAction)deleteReminder:(id)sender {
+// 完成一个提醒。
+- (void)doneForReminder:(Reminder *)reminder{
+    NSString * prompt = [[NSUserDefaults standardUserDefaults] objectForKey:NeedDisplayPromptKey];
+    if (nil == prompt || [prompt isEqualToString:@"YES"]) {
+        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"您可以左侧菜单中找到已完成的任务" delegate:self cancelButtonTitle:@"关闭" otherButtonTitles:@"不再提示", nil];
+        [alert show];
+    }
+    
+    // 修改提醒状态。
+    if ([reminder.state integerValue] == ReminderStateUnFinish) {
+        [self.reminderManager modifyReminder:reminder withState:ReminderStateFinish];
+    }
+    
+    [_tableViewRecognizer removeSideSwipeView:NO];
+    
+    [[self.group objectForKey:[self.keys objectAtIndex:_curDeleteIndexPath.section]] removeObjectAtIndex:_curDeleteIndexPath.row];
+    [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_curDeleteIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+    [self clearGroup];
+    
+    [self performSelector:@selector(reloadData) withObject:self afterDelay:0.2];
+}
+
+// 完成提醒图标被按下。
+- (IBAction)finishReminder:(id)sender {
+    if (nil != _curReminder) {
+        [self doneForReminder:_curReminder];
+    }
+}
+
+// 收到删除提醒消息处理。
+- (void)handleDeletingReminderMessage:(NSNotification *)notification{
+    Reminder * reminder = [notification.userInfo objectForKey:kReminderObject];
+    if (reminder) {
+        _curReminder = reminder;
+        [self deleteReminderIconClicked:nil];
+    }
+}
+
+// 删除提醒图标按下。
+- (IBAction)deleteReminderIconClicked:(id)sender {
     if (nil != _curReminder) {
         UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:@"确定?" message:@"删除后不能恢复" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"删除", nil];
         alertView.tag = 1;
@@ -492,7 +524,8 @@
     }
 }
 
-- (IBAction)recoverReminder:(id)sender {
+// 还原提醒图标按下。
+- (IBAction)recoverReminderIconClicked:(id)sender {
     if (nil != _curReminder) {
         [self.reminderManager modifyReminder:_curReminder withState:ReminderStateUnFinish];
         [_tableViewRecognizer removeSideSwipeView:NO];
@@ -629,7 +662,7 @@
     
     ReminderSettingViewController * controller = [ReminderSettingViewController createController:cell.reminder withDateType:_dateType];
 
-    if (YES == [_userManager isOneself:[cell.reminder.userID stringValue]]) {
+    if (YES == [_userManager isSentToMyself:cell.reminder.userID]) {
         controller.receiver = @"自己";
     }else if (nil != cell.bilateralFriend) {
         controller.receiver = cell.bilateralFriend.nickname;
@@ -638,11 +671,13 @@
     }
     
     [self.navigationController pushViewController:controller animated:YES];
+    
+    _curDeleteIndexPath = indexPath;
 }
 
 #pragma mark - ReminderManager delegate
 - (void)deleteReminderSuccess:(Reminder *)reminder {
-    [self.reminderManager deleteReminder:reminder];
+    [self.reminderManager deleteLocalReminder:reminder];
     
 
      [_tableViewRecognizer removeSideSwipeView:NO];
@@ -672,10 +707,8 @@
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if (1 == alertView.tag && buttonIndex != alertView.cancelButtonIndex) {
-        NSString * userId = [_curReminder.userID stringValue];
-        if ([userId isEqualToString:@"0"] ||
-            [_userManager.userID isEqualToString:userId]) {
-            [self.reminderManager deleteReminder:_curReminder];
+        if ([_userManager isSentToMyself:_curReminder.userID]){
+            [self.reminderManager deleteLocalReminder:_curReminder];
             
             [_tableViewRecognizer removeSideSwipeView:NO];
             [[self.group objectForKey:[self.keys objectAtIndex:_curDeleteIndexPath.section]] removeObjectAtIndex:_curDeleteIndexPath.row];
@@ -683,7 +716,7 @@
             [self clearGroup];
             [self performSelector:@selector(reloadData) withObject:self afterDelay:0.2];
         }else {
-            [self.reminderManager deleteReminderRequest:_curReminder];
+            [self.reminderManager deleteRemoteReminder:_curReminder];
             [[MBProgressManager defaultManager] showHUD:@"删除中"];
         }
 

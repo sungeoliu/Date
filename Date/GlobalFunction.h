@@ -14,17 +14,22 @@
 
 + (GlobalFunction *)defaultInstance;
 
+// 个性化导航条。
 - (void)customizeNavigationBar:(UINavigationBar *)navigationBar;
 
-- (IBAction)sharedBackItemClicked:(id)sender;
+// 个性化导航按钮。
+- (void)customNavigationBarItem:(UIBarButtonItem *)item;
+
+// 个性化导航条左侧按钮的消息处理函数。
 - (void)initNavleftBarItemWithController:(UIViewController *)controller withAction:(SEL)action;
 
-//- (void)initNavLeftBarCancelItemWithController:(UIViewController *)controller;
+- (IBAction)sharedBackItemClicked:(id)sender;
+
 - (NSString *)custumDateString:(NSString *)date withShowDate:(BOOL)show;
 - (NSString *)custumDateTimeString:(NSDate *)date;
 - (NSString *)custumDayString:(NSDate *)date;
 - (NSString *)custumDateString2:(NSDate *)date;
-- (void)customNavigationBarItem:(UIBarButtonItem *)item;
+
 
 - (NSInteger)diffDay:(NSDate *)date;
 

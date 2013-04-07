@@ -220,14 +220,15 @@ typedef enum {
     
     _lastIndexPath = indexPath;
     
+    RemindersInboxViewController * rib = [AppDelegate delegate].ribViewController;
+    
     // TODO: 毛宇是猪。
     uint types[] = {DateTypeCollectingBox,DateTypeToday, DateTypeRecent, DateTypeHistory};
-    if ([AppDelegate delegate].ribViewController.dataType != types[indexPath.row]) {
-        [AppDelegate delegate].ribViewController.dataType = types[indexPath.row];
-        [[AppDelegate delegate].ribViewController initDataWithAnimation:YES];
+    if (rib.dataType != types[indexPath.row]) {
+        rib.dataType = types[indexPath.row];
+        [rib initDataWithAnimation:YES];
     }
     
-    RemindersInboxViewController * rib = [AppDelegate delegate].ribViewController;
     [rib restoreViewLocation];
     
     // 禁用PPReavealSideViewController提供的手势，使用rib提供的手势。

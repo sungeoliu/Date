@@ -10,6 +10,8 @@
 #import "LMLibrary.h"
 #import "AppDelegate.h"
 #import <objc/runtime.h>
+#import "ReminderSettingViewController.h"
+#import "ExpiredReminderManager.h"
 
 static GlobalFunction * sGlobalFunction;
 
@@ -44,6 +46,14 @@ static char UITopViewControllerKey;
             CGRect frame = vc.view.frame;
             NSLog(@"SettingVC %@: x=%f, y=%f", @"back", frame.origin.x, frame.origin.y);
             [vc dismissViewControllerAnimated:YES completion:nil];
+            
+            if ([vc isKindOfClass:[ReminderSettingViewController class]]) {
+                ReminderSettingViewController * rsVc = (ReminderSettingViewController *)vc;
+                if (rsVc.isShowingExpiredReminder) {
+                    NSLog(@"检查是否还有到期提醒");
+                    [[ExpiredReminderManager defaultInstance] presentReminder];
+                }
+            }
         }else{
             [topVC.navigationController popViewControllerAnimated:YES];
         }
@@ -77,6 +87,7 @@ static char UITopViewControllerKey;
     
     // 根据不同的显示模式（模态或导航），实现不同的返回按钮外观。
     if (controller.presentingViewController != nil && [self isRootNavigationViewController:controller]) {
+        
         // 当界面模态展示，并处于导航栈底时，左侧导航按钮处理成“取消”样式。
         
         item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:actionTarget action:customAction];

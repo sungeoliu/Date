@@ -20,6 +20,7 @@
 #import "RemindersInboxViewController.h"
 #import "ReminderSettingViewController.h"
 #import "GlobalFunction.h"
+#import "ExpiredReminderManager.h"
 #import "MobClick.h"
 
 @interface AppDelegate () {
@@ -57,6 +58,9 @@
 }
 
 - (void)showAlertViewWithReminder:(Reminder *)reminder {
+    // TODO: 在这里直接执行alertView delegate中“查看”按下后的步骤。
+    // TODO: 这个函数自身应该被移到ExpiredReminderManager中的presentReminder。
+    
     UIAlertView * alertView;
     BilateralFriend * friend = [[BilateralFriendManager defaultManager] bilateralFriendWithUserID:reminder.userID];
     NSString * nickname;
@@ -92,15 +96,16 @@
 - (void)checkRemindersExpired {
     NSArray * reminders = [[ReminderManager defaultManager] remindersExpired];
     if (nil != reminders) {
-        //[self showRemindersNotificationViewControllerWithReminders:[reminders objectAtIndex:0]];
-        _showingAlert = YES;
-        [self showAlertViewWithReminder:[reminders objectAtIndex:0]];
+//        _showingAlert = YES;
+//        [self showAlertViewWithReminder:[reminders objectAtIndex:0]];
+        NSLog(@"添加一批到期提醒：%d 个", reminders.count);
+        [[ExpiredReminderManager defaultInstance] addNodes:reminders];
     }
 }
 
-- (void)handleAlarmPlayFinishedMessageMessage:(NSNotification *)note {
-    [self checkRemindersExpired];
-}
+//- (void)handleAlarmPlayFinishedMessageMessage:(NSNotification *)note {
+//    [self checkRemindersExpired];
+//}
 
 #pragma 类成员函数
 
@@ -131,10 +136,10 @@
 
     [self.window makeKeyAndVisible];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleAlarmPlayFinishedMessageMessage:) name:kAlarmPlayFinishedMessage
-                                               object:nil];
-    
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(handleAlarmPlayFinishedMessageMessage:) name:kAlarmPlayFinishedMessage
+//                                               object:nil];
+//    
     [MobClick startWithAppkey:kUMengAppKey];
     
     return YES;
@@ -142,6 +147,10 @@
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
     UIApplicationState state = application.applicationState;
+    NSLog(@"收到本地通知");
+    [self checkRemindersExpired];
+    return;
+    
     if (YES == _showingAlert) {
 #ifdef DEBUG
         NSLog(@"不允许弹出提醒，因为上一个没有处理完。");
@@ -149,10 +158,9 @@
         return;
     }else {
         if (UIApplicationStateActive == state) {
-            [[SoundManager defaultSoundManager] playAlarmVoice];
+            [[SoundManager defaultSoundManager] playAlarmSound];
         }
     }
-   
 }
 
 - (void)application:(UIApplication *)app didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
@@ -190,9 +198,9 @@
     [[SinaWeiboManager defaultManager].sinaWeibo applicationDidBecomeActive];
     [[ReminderManager defaultManager] getRemoteRemindersRequest];
     [MobClick event:kUMengEventLaunchTimes];
-    if (NO == _showingAlert) {
-        [self checkRemindersExpired];
-    }
+    
+    NSLog(@"App进入活跃状态");
+    [self checkRemindersExpired];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
@@ -312,20 +320,24 @@
     ReminderManager * manager = [ReminderManager defaultManager];
     Reminder * reminder = [manager reminderWithId:alertView.restorationIdentifier];
     [manager modifyReminder:reminder withBellState:YES];
+    
+    // 可以在所有提示界面都弹完之后再调用。
     [_ribViewController initDataWithAnimation:NO];
     
     if (buttonIndex == 0) {
+        // "查看“操作处理。DateTypeToday是狡猾做法，认为到期的一定是今天的。
         ReminderSettingViewController * controller = [ReminderSettingViewController createController:_alertedReminder withDateType:DateTypeToday];
         UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:controller];
         [[GlobalFunction defaultInstance] customizeNavigationBar:nav.navigationBar];
         [_navController presentViewController:nav animated:YES completion:nil];
         
         // TODO 弹出界面关闭时，调用下面两行，否则无法处理连续到期的提醒（延迟查看时）。
-        _showingAlert = NO;
+//        _showingAlert = NO;
 //        [self checkRemindersExpired];
     }else{
-        _showingAlert = NO;
-        [self checkRemindersExpired];
+        // "我知道了“处理。
+//        _showingAlert = NO;
+//        [self checkRemindersExpired];
     }
 }
 @end

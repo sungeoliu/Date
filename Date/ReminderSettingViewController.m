@@ -20,6 +20,7 @@
 #import "ModifyTextReminderViewController.h"
 #import "LMLibrary.h"
 #import "GlobalFunction.h"
+#import "ActionViewController.h"
 
 @interface ReminderSettingViewController () {
     UIDatePicker * _datePicker;
@@ -47,14 +48,15 @@
 @synthesize reminderType = _reminderType;
 @synthesize showSendFriendCell = _showSendFriendCell;
 @synthesize textCell = _textCell;
-
+@synthesize isShowingExpiredReminder = _isShowingExpiredReminder;
 
 + (ReminderSettingViewController *)createController:(Reminder *)reminder withDateType:(NSInteger)type{
     ReminderSettingViewController * controller;
     NSString * audioPath = reminder.audioUrl;
     UserManager * userManager = [UserManager defaultManager];
     if (DateTypeHistory == type ||
-        (NO == [userManager isOneself:[reminder.userID stringValue]] && nil != reminder.triggerTime)) {
+        (NO == [userManager isSentToMyself:reminder.userID] && nil != reminder.triggerTime)) {
+        // 展示提醒。
         if (nil == audioPath || [audioPath isEqualToString:@""]) {
             controller = [[ShowTextReminderViewController alloc] initWithNibName:@"TextReminderSettingViewController" bundle:nil];
         }else {
@@ -63,6 +65,7 @@
         
         controller.btnSave.hidden = YES;
     }else {
+        // 修改提醒。
         if (nil == audioPath || [audioPath isEqualToString:@""]) {
             controller = [[ModifyTextReminderViewController alloc] initWithNibName:@"TextReminderSettingViewController" bundle:nil];
         }else {
@@ -94,28 +97,6 @@
 
 - (void)initTableFooterViewOfReminderFinished {
     UIView * view = [[UIView alloc] initWithFrame:CGRectMake(0, 100, 300, 150)];
-    
-//    _labelPrompt = [[UILabel alloc] initWithFrame:CGRectMake(10, 5, 300, 20)];
-//    _labelPrompt.backgroundColor = [UIColor clearColor];
-//    _labelPrompt.textAlignment = NSTextAlignmentCenter;
-//    _labelPrompt.textColor = RGBColor(153,153,153);
-//    
-//    if (_triggerTime != nil) {
-//        _labelPrompt.text = @"将还原到所有提醒";
-//    }else {
-//        _labelPrompt.text = @"将还原到草稿箱";
-//    }
-//    [view addSubview:_labelPrompt];
-    
-//    _btnSave = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-//    _btnSave.layer.frame = CGRectMake(10, 30, 300, 44);
-//    _btnSave.titleLabel.font = [UIFont systemFontOfSize:18.0];
-//    [_btnSave setBackgroundImage:[UIImage imageNamed:@"buttonBg"] forState:UIControlStateNormal];
-//    [_btnSave setTitle:@"还原" forState:UIControlStateNormal];
-//    [_btnSave setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-//    [_btnSave addTarget:self action:@selector(restoreReminder) forControlEvents:UIControlEventTouchUpInside];
-//    [view addSubview:_btnSave];
-    
     self.tableView.tableFooterView = view;
 
 }
@@ -171,12 +152,6 @@
 - (void)initTableFooterView {
     UIView * view = [[UIView alloc] initWithFrame:CGRectMake(0, 100, 300, 150)];
     
-//    _labelPrompt = [[UILabel alloc] initWithFrame:CGRectMake(10, 5, 300, 20)];
-//    _labelPrompt.backgroundColor = [UIColor clearColor];
-//    _labelPrompt.textAlignment = NSTextAlignmentCenter;
-//    _labelPrompt.textColor = RGBColor(153,153,153);
-//    [view addSubview:_labelPrompt];
-    
     _btnSave = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     _btnSave.layer.frame = CGRectMake(10, 30, 300, 44);
     _btnSave.titleLabel.font = [UIFont systemFontOfSize:18.0];
@@ -191,45 +166,36 @@
 
 - (void)updateTableFooterViewInCreateState{
     if (nil != _triggerTime) {
-        if (YES == [[UserManager defaultManager] isOneself:[_receiverId stringValue]] ) {
-//            _labelPrompt.text = LocalString(@"SettingPromptOfAlarm");
+        if (YES == [[UserManager defaultManager] isSentToMyself:_receiverId] ) {
             [_btnSave setTitle:kSave forState:UIControlStateNormal];
         }else {
-//            _labelPrompt.text = LocalString(@"SettingPromptOfSend");
             [_btnSave setTitle:LocalString(@"SettingPromptOfSendWithButton") forState:UIControlStateNormal];
         }
     }else {
-//        _labelPrompt.text = LocalString(@"SettingPromptOfDraftBox");
         [_btnSave setTitle:kSave forState:UIControlStateNormal];
     }
 }
 
 - (void)updateTableFooterViewInModifyInboxState {
     if (nil != _triggerTime) {
-        if (YES == [[UserManager defaultManager] isOneself:[_receiverId stringValue]] ) {
-//            _labelPrompt.text = LocalString(@"SettingPromptOfAlarm");;
+        if (YES == [[UserManager defaultManager] isSentToMyself:_receiverId] ) {
             [_btnSave setTitle:kSave forState:UIControlStateNormal];
         }else {
-//            _labelPrompt.text = LocalString(@"SettingPromptOfSend");
             [_btnSave setTitle:LocalString(@"SettingPromptOfSendWithButton") forState:UIControlStateNormal];
         }
     }else {
-//        _labelPrompt.text = @"";
         [_btnSave setTitle:kSave forState:UIControlStateNormal];
     }
 }
 
 - (void)updateTableFooterViewInModifyAlarmState {
     if (nil != _triggerTime) {
-        if (YES == [[UserManager defaultManager] isOneself:[_receiverId stringValue]] ) {
-//            _labelPrompt.text = @"";
+        if (YES == [[UserManager defaultManager] isSentToMyself:_receiverId] ) {
             [_btnSave setTitle:kSave forState:UIControlStateNormal];
         }else {
-//            _labelPrompt.text = LocalString(@"SettingPromptOfSend");
             [_btnSave setTitle:LocalString(@"SettingPromptOfSendWithButton") forState:UIControlStateNormal];
         }
     }else {
-//        _labelPrompt.text = LocalString(@"SettingPromptOfDraftBox");
         [_btnSave setTitle:kSave forState:UIControlStateNormal];
     }
 }
@@ -247,27 +213,28 @@
     _reminder.triggerTime = _triggerTime;
     _reminder.type = [NSNumber numberWithInteger:_reminderType];
     _reminder.desc = _desc;
-    if (NO == [_userManager isOneself:[_reminder.userID stringValue]] &&
-        nil != _reminder.triggerTime &&  ReminderTypeReceiveAndNoAlarm != _reminderType) {
+    
+    if (![_userManager isSentToMyself:_reminder.userID]) {
         [[MBProgressManager defaultManager] showHUD:@"发送中"];
     }
+    
     [[ReminderManager defaultManager] sendReminder:_reminder];
 }
 
 - (void)modifyReminder {
     _reminder.userID = _receiverId;
-    if (YES == [_userManager isOneself:[_receiverId stringValue]] ||
-        nil == _triggerTime || ReminderTypeReceiveAndNoAlarm == _reminderType) {
+    if ([_userManager isSentToMyself:_receiverId]) {
         [[ReminderManager defaultManager] modifyReminder:_reminder withTriggerTime:_triggerTime withDesc:_desc withType:_reminderType];
         
         [self dissmissSettingView];
     }else {
-        [[MBProgressManager defaultManager] showHUD:@"发送中"];
         _oriTriggerTime = _reminder.triggerTime;
         _reminder.triggerTime = _triggerTime;
         _reminder.desc = _desc;
         _reminder.type = [NSNumber numberWithInteger:ReminderTypeSend];
         [[ReminderManager defaultManager] sendReminder:_reminder];
+        
+        [[MBProgressManager defaultManager] showHUD:@"发送中"];
     }
 }
 
@@ -287,20 +254,37 @@
     }
 }
 
-- (void)saveReminderAndPopToRootView{
+// 处理修改提醒时间界面的“完成”快捷方式按钮。
+- (void)handleSaveReminderMessage:(NSNotification *)notification{
+    
     // saveReminder在派生类中被定义。当前类其实相当于C++中的纯虚类。
+    
+    if (notification && notification.userInfo != nil) {
+        self.triggerTime = [notification.userInfo objectForKey:kTriggerTime];
+        self.reminderType = ReminderTypeReceive;
+    }
+    
+    NSLog(@"收到提醒修改消息");
     SEL sel = @selector(saveReminder);
     if (sel) {
         SuppressPerformSelectorLeakWarning([self performSelector:sel]);
     }
 }
 
+// 修改提醒完成后，关闭当前界面。
 - (void)dissmissSettingView{
     if (self.presentingViewController != nil) {
         [self dismissModalViewControllerAnimated:YES];
     }else{
         [self.navigationController popToRootViewControllerAnimated:YES];
     }
+}
+
+// 弹出对到期提醒做处理的快捷菜单。
+- (void)presentActionView{
+    ActionViewController * av = [[ActionViewController alloc] initWithNibName:@"ActionViewController" bundle:nil];
+    av.reminder = self.reminder;
+    [self.navigationController pushViewController:av animated:YES];
 }
 
 #pragma 事件函数
@@ -318,20 +302,22 @@
     [super viewDidLoad];
     self.view.backgroundColor = RGBColor(244, 244, 244);
     [self computeFontSize];
-//    if (_dateType == DataTypeRecent ||
-//        _dateType == DataTypeToday  ||
-//        _dateType == DataTypeCollectingBox) {
-        [self initTableFooterView];
-//    }else if (_dateType == DataTypeHistory){
-//        [self initTableFooterViewOfReminderFinished];
-//    }
+    [self initTableFooterView];
+
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     _userManager = [UserManager defaultManager];
     _isLogin = [[SinaWeiboManager defaultManager].sinaWeibo isLoggedIn];
     _isAuthValid = [[SinaWeiboManager defaultManager].sinaWeibo isAuthValid];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveReminderAndPopToRootView) name:kReminderSettingOk object:nil];
+    NSLog(@"注册 kReminderSettingOk 消息");
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleSaveReminderMessage:) name:kReminderSettingOk object:nil];
+}
+
+// 添加操作快捷方式入口。
+- (void)addActionEntrance{
+    UIBarButtonItem * item = [[UIBarButtonItem alloc] initWithTitle:@"..." style:UIBarButtonItemStyleBordered target:self action:@selector(presentActionView)];
+    self.navigationItem.rightBarButtonItem = item;
 }
 
 - (void)dealloc{
@@ -366,10 +352,12 @@
 }
 
 #pragma mark - ReminderManager delegate
+
+// TODO: 新建提醒成功后，这是干什么呢？
 - (void)newReminderSuccess:(NSString *)reminderId {
     self.reminderManager.delegate = nil;
     [[MBProgressManager defaultManager] removeHUD];
-    if (NO == [_userManager isOneself:[_reminder.userID stringValue]] && nil != _reminder.triggerTime && ReminderTypeReceiveAndNoAlarm != [_reminder.type integerValue]) {
+    if (NO == [_userManager isSentToMyself:_reminder.userID] && nil != _reminder.triggerTime && ReminderTypeReceiveAndNoAlarm != [_reminder.type integerValue]) {
         if (nil == _reminder.id || [_reminder.id isEqualToString:@""]) {
             _reminder.id = reminderId;
         }

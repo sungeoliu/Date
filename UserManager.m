@@ -165,9 +165,10 @@ expirationDate == nil) {
 
 }
 
-- (BOOL)isOneself:(NSString *)userId {
+- (BOOL)isSentToMyself:(NSNumber *)userId {
     BOOL result = NO;
-    if ([userId isEqualToString:_oneselfId] || [userId isEqualToString:[self userID]]) {
+    NSString * stringId = [userId stringValue];
+    if ([stringId isEqualToString:_oneselfId] || [stringId isEqualToString:[self userID]]) {
         result = YES;
     }
     

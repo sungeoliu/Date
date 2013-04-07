@@ -151,7 +151,7 @@
             [_labelAudioTime setHidden:YES];
         }
         
-        if ([[UserManager defaultManager] isOneself:[_reminder.userID stringValue]]) {
+        if ([[UserManager defaultManager] isSentToMyself:_reminder.userID]) {
             [_imageViewContact setHidden:YES];
             _imageViewContact.frame = CGRectMake(_imageViewContactOriX, 7 , 16, 16);
         }else {
@@ -160,7 +160,6 @@
         }
 
         _labelDescription.text = _reminder.desc;
-//        self.labelDay.text = day;
     }
 }
 
@@ -203,7 +202,7 @@
 - (BOOL)showFrom {
     NSString * from = @"来自:";
     BOOL result = NO;
-    if (![[UserManager defaultManager] isOneself:[_reminder.userID stringValue]]) {
+    if (![[UserManager defaultManager] isSentToMyself:_reminder.userID]) {
         result = YES;
         if (nil != _bilateralFriend) {
             from = [from stringByAppendingString:_bilateralFriend.nickname];

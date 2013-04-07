@@ -337,7 +337,7 @@ static SoundManager * sSoundManager;
     return result;
 }
 
-- (void)playAlarmVoice {
+- (void)playAlarmSound {
     if (! [self.alertSound isEqualToString: AlertSoundTypeSilence]) {
         [self playAlertSound:self.alertSound];
     }
@@ -441,20 +441,13 @@ static SoundManager * sSoundManager;
 
 #pragma AVAudioPlayerDelegate
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+    [self stopAudio];
     if (_alarmPlayer == player) {
-        _alarmPlayer = nil;
-        
-            
-            //if ([self.delegate respondsToSelector:@selector(alarmPlayerDidFinishPlaying)]) {
-            //    [self.delegate performSelector:@selector(alarmPlayerDidFinishPlaying) withObject:nil];
-            //}
-            
-        NSNotification * notification = nil;
-        notification = [NSNotification notificationWithName:kAlarmPlayFinishedMessage object:nil];
-        [[NSNotificationCenter defaultCenter] postNotification:notification];
-     
+//        _alarmPlayer = nil;            
+//        NSNotification * notification = nil;
+//        notification = [NSNotification notificationWithName:kAlarmPlayFinishedMessage object:nil];
+//        [[NSNotificationCenter defaultCenter] postNotification:notification];
     }else {
-        _player = nil;
         if (self.delegate != nil) {
             if ([self.delegate respondsToSelector:@selector(audioPlayerDidFinishPlaying)]) {
                 [self.delegate performSelector:@selector(audioPlayerDidFinishPlaying) withObject:nil];

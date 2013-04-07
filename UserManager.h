@@ -32,5 +32,5 @@
 - (void)updateDeviceTokenRequest:(NSString *)deviceToken;
 - (void)handleUpdateDeviceTokenResponse:(id)json;
 
-- (BOOL)isOneself:(NSString *)userId;
+- (BOOL)isSentToMyself:(NSNumber *)userId;
 @end

@@ -286,7 +286,7 @@ typedef enum {
 
 #pragma 类成员函数
 - (void)saveSentReminder:(Reminder *)reminder {
-    if (YES == [[UserManager defaultManager] isOneself:[reminder.userID stringValue]] 
+    if (YES == [[UserManager defaultManager] isSentToMyself:reminder.userID]
         || nil == reminder.triggerTime || ReminderTypeReceiveAndNoAlarm == [reminder.type integerValue]) {
         if (nil != reminder.triggerTime && ReminderTypeReceiveAndNoAlarm != [reminder.type integerValue]) {
             reminder.isAlarm = [NSNumber numberWithBool:NO];
@@ -322,11 +322,12 @@ typedef enum {
     [[NSNotificationCenter defaultCenter] postNotification:notification];
 }
 
-- (void)deleteReminder:(Reminder *)reminder {
+- (void)deleteLocalReminder:(Reminder *)reminder {
     [self updateLocalNotificationWithReminder:reminder];
     if (ReminderStateUnFinish == [reminder.state integerValue]) {
          [self updateRemindersSizeWith:reminder.triggerTime withOperate:BadgeOperateSub];
     }
+    
     [[SoundManager defaultSoundManager] deleteAudioFile:reminder.audioUrl];
     [self deleteFromStore:reminder synchronized:YES];
 }
@@ -441,7 +442,7 @@ typedef enum {
 }
 
 - (void)sendReminder:(Reminder *)reminder {
-    if (YES == [[UserManager defaultManager] isOneself:[reminder.userID stringValue]] || nil == reminder.triggerTime || ReminderTypeReceiveAndNoAlarm == [reminder.type integerValue]) {
+    if (YES == [[UserManager defaultManager] isSentToMyself:reminder.userID] || nil == reminder.triggerTime || ReminderTypeReceiveAndNoAlarm == [reminder.type integerValue]) {
         NSString * reminderId = [[NSDate date] description];
         [self updateRemindersSizeWith:reminder.triggerTime withOperate:BadgeOperateAdd];
         
@@ -555,7 +556,7 @@ typedef enum {
     }
 }
 
-- (void)deleteReminderRequest:(Reminder *)reminder {
+- (void)deleteRemoteReminder:(Reminder *)reminder {
     [[HttpRequestManager defaultManager] deleteReminderRequest:reminder];
 }
 
