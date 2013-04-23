@@ -65,7 +65,7 @@ typedef enum {
 
 - (NSMutableDictionary *)remindersWithId:(NSArray *) remindersId;
 - (NSArray *)remindersWithUserId:(NSNumber *)userId;
-- (NSArray *)remindersExpired;
+- (NSArray *)expiredReminder;
 - (NSArray *)allRemindersWithReimnderType:(ReminderType) type;
 - (NSArray *)recentUnFinishedReminders;
 - (NSArray *)todayUnFinishedReminders;

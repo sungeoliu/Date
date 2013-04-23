@@ -245,12 +245,16 @@
 
 - (void)initTriggerTime {
     if (DateTypeToday == self.dateType || DateTypeRecent == self.dateType) {
+        // 日期提醒。
         NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
         NSString * strTriggerTime;
         [formatter setDateFormat:@"yyyy-MM-dd 23:59:59"];
         strTriggerTime = [formatter stringFromDate:[NSDate date]];
         [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
         self.triggerTime = [formatter dateFromString:strTriggerTime];
+    }else if (DateTypeSpecific == self.dateType){
+        // 闹铃提醒。
+        self.triggerTime = [GlobalFunction rightAlignedDate];
     }
 }
 

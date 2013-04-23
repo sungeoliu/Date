@@ -30,10 +30,14 @@
 @synthesize selectedRow = _selectedRow;
 
 #pragma 私有函数
+
 - (void)initPickerView {
     [_datePick setFrame:CGRectMake(0,_viewHeight , 320, 216)];
     _datePick.minimumDate = [NSDate date];
-    [_datePick setDate:[NSDate date]];
+    NSDate * date = [GlobalFunction rightAlignedDate];
+    NSLog(@"初始化时间控件：%@", [date description]);
+    [_datePick setDate:date];
+    
     [self.view addSubview:_datePick];
     [_datePick addTarget:self action:@selector(valueChanged:) forControlEvents:UIControlEventValueChanged];
 }
@@ -45,12 +49,7 @@
     int type = -1;
     NSDate * triggerTime = nil;
     switch (_selectedRow) {
-        case 2:
-            // 收集箱。
-            _parentContoller.triggerTime = nil;
-            _parentContoller.reminderType = ReminderTypeReceiveAndNoAlarm;
-            break;
-        case 0:
+        case -1:    // 禁用。
             // 日期提醒。
             [formatter setDateFormat:@"yyyy-MM-dd 23:59:59"];
             strTriggerTime = [formatter stringFromDate:_datePick.date];
@@ -58,12 +57,17 @@
             type = ReminderTypeReceiveAndNoAlarm;
             triggerTime = [formatter dateFromString:strTriggerTime];
             break;
-        case 1:
+        case 0:
             // 闹铃提醒。
             [formatter setDateFormat:@"yyyy-MM-dd HH:mm:00"];
             strTriggerTime = [formatter stringFromDate:_datePick.date];
             type = ReminderTypeReceive;
             triggerTime = [formatter dateFromString:strTriggerTime];
+            break;
+        case 1:
+            // 收集箱。
+            _parentContoller.triggerTime = nil;
+            _parentContoller.reminderType = ReminderTypeReceiveAndNoAlarm;
             break;
         default:
             break;
@@ -78,37 +82,32 @@
 - (void)back {
     if (YES == _dirty) {
         [self updateTime];
+        [_parentContoller updateTriggerTimeCell];
     }
     
     [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)initSelectedReminderTypeIndex{
-    if (_parentContoller.reminderType == ReminderTypeReceiveAndNoAlarm) {
-        if (_parentContoller.triggerTime == nil) {
-            self.selectedRow = 2;
-        }else{
-            self.selectedRow = 0;
-        }
-    }else if(_parentContoller.reminderType == ReminderTypeReceive){
-        self.selectedRow = 1;
+    if(_parentContoller.reminderType == ReminderTypeReceive){
+        self.selectedRow = 0;
     }else{
         // 默认选择
-        self.selectedRow = 0;
+        self.selectedRow = 1;
     }
 }
 
 - (void)reloadDatePicker{
     switch (self.selectedRow) {
-        case 0:
+        case -1:// 禁止日期。
             [_labelPrompt setHidden:YES];
             [self showPickerViewWithMode:UIDatePickerModeDate];
             break;
-        case 1:
+        case 0:
             [_labelPrompt setHidden:YES];
             [self showPickerViewWithMode:UIDatePickerModeDateAndTime];
             break;
-        case 2:
+        case 1:
             [_labelPrompt setHidden:NO];
             [self hideDatePickerView];
             break;
@@ -137,14 +136,12 @@
     if (_showed && _datePick.datePickerMode == pickMode) {
         return;
     }
-    
-//    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
-//    dispatch_async(queue, ^{[_datePick setDatePickerMode:pickMode];});
+
     [_datePick setDatePickerMode:pickMode];
     
     
     if (pickMode == UIDatePickerModeDateAndTime) {
-        _datePick.minuteInterval = 5;
+        _datePick.minuteInterval = DatePickerMinutesInterval;
     }
  
     if (! _showed) {
@@ -204,7 +201,7 @@
     UIWindow * window = [UIApplication sharedApplication].keyWindow;
     _viewHeight = window.frame.size.height;
     [self initTableFooterView];
-    _rows = [[NSArray alloc] initWithObjects:kOneDayTimeDesc,kAlarmTimeDesc,kInboxTimeDesc, nil];
+    _rows = [[NSArray alloc] initWithObjects:kAlarmTimeDesc,kInboxTimeDesc, nil];
     [[GlobalFunction defaultInstance] initNavleftBarItemWithController:self withAction:@selector(back)];
 
     // “完成”快捷按钮。

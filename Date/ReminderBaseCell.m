@@ -92,7 +92,8 @@
     if (nil != reminder.triggerTime) {
         NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
         [formatter setDateFormat:@"HH:mm"];
-            
+        
+        NSLog(@"triggertime base: %@", self.reminder.triggerTime.description);
         _triggerTime = [formatter stringFromDate:self.reminder.triggerTime];
     }
     

@@ -41,6 +41,7 @@ static ExpiredReminderManager * sDefaultInstance = nil;
     
     // 显示一个提醒。DateTypeToday是狡猾做法，认为到期的一定是今天的。
     ReminderSettingViewController * controller = [ReminderSettingViewController createController:reminder withDateType:DateTypeToday];
+    
     // 打上标记，关闭时再次检查，形成连续检查。
     controller.isShowingExpiredReminder = YES;
     UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:controller];
@@ -67,6 +68,7 @@ static ExpiredReminderManager * sDefaultInstance = nil;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             [self presentSettingViewForReminder:reminder];
+            [self removeNode:reminder];
         });
         
         return YES;
@@ -80,12 +82,15 @@ static ExpiredReminderManager * sDefaultInstance = nil;
 }
 
 - (void)addNodes:(NSArray *)nodes{
-    // TODO: 要做去重处理。
     if (nodes != nil) {
         if (self.queue == nil) {
             self.queue = [NSMutableArray arrayWithArray:nodes];
         }else{
-            [self.queue addObjectsFromArray:nodes];
+            for (Reminder * reminder in nodes) {
+                if ([self.queue indexOfObject:reminder] == NSNotFound) {
+                    [self.queue addObject:reminder];
+                }
+            }
         }
         
         [[NSNotificationCenter defaultCenter] postNotificationName:kReminderExpiredMessage object:nil];

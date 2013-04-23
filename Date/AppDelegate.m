@@ -57,55 +57,13 @@
     [_navController presentViewController:nav animated:YES completion:nil];
 }
 
-- (void)showAlertViewWithReminder:(Reminder *)reminder {
-    // TODO: 在这里直接执行alertView delegate中“查看”按下后的步骤。
-    // TODO: 这个函数自身应该被移到ExpiredReminderManager中的presentReminder。
-    
-    UIAlertView * alertView;
-    BilateralFriend * friend = [[BilateralFriendManager defaultManager] bilateralFriendWithUserID:reminder.userID];
-    NSString * nickname;
-    NSString * userId = [reminder.userID stringValue];
-    if ([userId isEqualToString:[UserManager defaultManager].oneselfId]) {
-        nickname = @"";
-    }else {
-        if (nil == friend) {
-            nickname = [NSString stringWithFormat:@"%@ ",[reminder.userID stringValue]];
-        }else {
-            nickname = [NSString stringWithFormat:@"%@ ",friend.nickname];
-        }
-    }
-    NSString * title;
-    NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"HH:mm"];
-    NSString * time = [formatter stringFromDate:reminder.triggerTime];
-    title  = time;
-    NSString * message = [nickname stringByAppendingString:@"提醒:"];
-    message = [message stringByAppendingString:reminder.desc];
-    
-    if (nil != reminder.audioUrl && ![reminder.audioUrl isEqualToString:@""]) {
-        [[SoundManager defaultSoundManager] playAudio:reminder.audioUrl];
-    }
-    
-    alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:@"查看"otherButtonTitles:@"知道了", nil, nil];
-    alertView.restorationIdentifier = reminder.id;
-    [alertView show];
-    
-    _alertedReminder = reminder;
-}
-
 - (void)checkRemindersExpired {
-    NSArray * reminders = [[ReminderManager defaultManager] remindersExpired];
+    NSArray * reminders = [[ReminderManager defaultManager] expiredReminder];
     if (nil != reminders) {
-//        _showingAlert = YES;
-//        [self showAlertViewWithReminder:[reminders objectAtIndex:0]];
         NSLog(@"添加一批到期提醒：%d 个", reminders.count);
         [[ExpiredReminderManager defaultInstance] addNodes:reminders];
     }
 }
-
-//- (void)handleAlarmPlayFinishedMessageMessage:(NSNotification *)note {
-//    [self checkRemindersExpired];
-//}
 
 #pragma 类成员函数
 
@@ -314,30 +272,4 @@
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    NSLog(@"buttonIndex %d", buttonIndex);
-    [[SoundManager defaultSoundManager] stopAudio];
-    ReminderManager * manager = [ReminderManager defaultManager];
-    Reminder * reminder = [manager reminderWithId:alertView.restorationIdentifier];
-    [manager modifyReminder:reminder withBellState:YES];
-    
-    // 可以在所有提示界面都弹完之后再调用。
-    [_ribViewController initDataWithAnimation:NO];
-    
-    if (buttonIndex == 0) {
-        // "查看“操作处理。DateTypeToday是狡猾做法，认为到期的一定是今天的。
-        ReminderSettingViewController * controller = [ReminderSettingViewController createController:_alertedReminder withDateType:DateTypeToday];
-        UINavigationController * nav = [[UINavigationController alloc]initWithRootViewController:controller];
-        [[GlobalFunction defaultInstance] customizeNavigationBar:nav.navigationBar];
-        [_navController presentViewController:nav animated:YES completion:nil];
-        
-        // TODO 弹出界面关闭时，调用下面两行，否则无法处理连续到期的提醒（延迟查看时）。
-//        _showingAlert = NO;
-//        [self checkRemindersExpired];
-    }else{
-        // "我知道了“处理。
-//        _showingAlert = NO;
-//        [self checkRemindersExpired];
-    }
-}
 @end

@@ -37,30 +37,31 @@ static GlobalFunction * sGlobalFunction;
 }
 
 static char UITopViewControllerKey;
+
+// 共享的左侧导航按钮处理函数。
 - (void)sharedBackItemClicked:(id)sender{
     UIViewController * topVC = (UIViewController *)objc_getAssociatedObject(sender, &UITopViewControllerKey);
     
-    if (topVC != nil) {
-        if (topVC.presentingViewController != nil && [self isRootNavigationViewController:topVC]) {
-            UIViewController * vc = [[[AppDelegate delegate] window] rootViewController];
-            CGRect frame = vc.view.frame;
-            NSLog(@"SettingVC %@: x=%f, y=%f", @"back", frame.origin.x, frame.origin.y);
-            [vc dismissViewControllerAnimated:YES completion:nil];
-            
-            if ([vc isKindOfClass:[ReminderSettingViewController class]]) {
-                ReminderSettingViewController * rsVc = (ReminderSettingViewController *)vc;
-                if (rsVc.isShowingExpiredReminder) {
-                    NSLog(@"检查是否还有到期提醒");
-                    [[ExpiredReminderManager defaultInstance] presentReminder];
-                }
+    if ([self isPresentedInModelMode:topVC] &&
+        [self isInNavigationStackBottom:topVC]) {
+//        UIViewController * vc = [[[AppDelegate delegate] window] rootViewController];
+//        CGRect frame = vc.view.frame;
+//        NSLog(@"SettingVC %@: x=%f, y=%f", @"back", frame.origin.x, frame.origin.y);
+        [topVC dismissViewControllerAnimated:YES completion:nil];
+        
+        if ([topVC isKindOfClass:[ReminderSettingViewController class]]) {
+            ReminderSettingViewController * rsVc = (ReminderSettingViewController *)topVC;
+            if (rsVc.isShowingExpiredReminder) {
+                NSLog(@"检查是否还有到期提醒");
+                [[ExpiredReminderManager defaultInstance] presentReminder];
             }
-        }else{
-            [topVC.navigationController popViewControllerAnimated:YES];
         }
+    }else{
+        [topVC.navigationController popViewControllerAnimated:YES];
     }
 }
 
-- (BOOL)isRootNavigationViewController:(UIViewController *)controller{
+- (BOOL)isInNavigationStackBottom:(UIViewController *)controller{
     if (controller.navigationController) {
         if (controller.navigationController.viewControllers.count == 1) {
             return YES;
@@ -68,6 +69,15 @@ static char UITopViewControllerKey;
     }
     
     return NO;
+}
+
+// 判断一个View是否以模态方式显示。
+- (BOOL)isPresentedInModelMode:(UIViewController *)controller{
+    if (controller && controller.presentingViewController != nil) {
+        return YES;
+    }else{
+        return NO;
+    }
 }
 
 - (void)initNavleftBarItemWithController:(UIViewController *)controller withAction:(SEL)action{
@@ -85,8 +95,9 @@ static char UITopViewControllerKey;
         needAssociation = YES;
     }
     
-    // 根据不同的显示模式（模态或导航），实现不同的返回按钮外观。
-    if (controller.presentingViewController != nil && [self isRootNavigationViewController:controller]) {
+    // 根据模态或导航的显示模式，实现不同的返回按钮外观。
+    if ([self isPresentedInModelMode:controller] &&
+        [self isInNavigationStackBottom:controller]) {
         
         // 当界面模态展示，并处于导航栈底时，左侧导航按钮处理成“取消”样式。
         
@@ -199,6 +210,21 @@ static char UITopViewControllerKey;
     datetimeString = [datetimeString stringByAppendingString:[formatter stringFromDate:date]];
     
     return datetimeString;
+}
+
+// 根据5分钟时间间隔，获取向右取证的当前时间，比如当前时间11：28分，返回11：30分的时间。
++ (NSDate *)rightAlignedDate{
+    NSDate * date = [NSDate date];
+    NSTimeInterval timeInterval = (int)[date timeIntervalSince1970];
+    NSTimeInterval left = (int)timeInterval % (DatePickerMinutesInterval * 60);
+    if (left != 0) {
+        timeInterval -= left;
+        timeInterval += DatePickerMinutesInterval * 60;
+        
+        return [NSDate dateWithTimeIntervalSince1970:timeInterval];
+    }else{
+        return date;
+    }
 }
 
 - (NSDate *)tomorrow {

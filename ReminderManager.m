@@ -415,20 +415,26 @@ typedef enum {
     
 }
 
-- (NSArray *)remindersExpired {
-    NSDate * date = [NSDate date];
-    //NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
-    //[formatter setDateFormat:@"yyyy-MM-dd"];
-    //NSDate * startDate = [formatter dateFromString:[formatter stringFromDate:date]];
+// 获取过期且未闹铃过的reminders。
+- (NSArray *)expiredReminder {
+    NSDate * now = [NSDate date];
+
     NSArray * results = nil;
     NSFetchRequest * request = [[NSFetchRequest alloc] initWithEntityName:kReminderEntity];
-    NSPredicate * predicate = [NSPredicate predicateWithFormat:@"type = %d AND isAlarm = NO AND triggerTime < %@",ReminderTypeReceive,date];
+    NSString * formatString = @"type = %d AND isAlarm = NO AND triggerTime < %@";
+//    NSString * formatString = @"type = %d AND triggerTime < %@";
+    NSPredicate * predicate = [NSPredicate predicateWithFormat:formatString, ReminderTypeReceive, now];
     NSSortDescriptor * sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"triggerTime" ascending:NO];
     NSArray * sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
     
     request.sortDescriptors = sortDescriptors;
     request.predicate = predicate;
     results = [self executeFetchRequest:request];
+    
+    for (Reminder * rem in results) {
+        NSLog(@"triggertime: %@", rem.triggerTime.description);
+        NSLog(@"isAlarmmed : %@", [rem.isAlarm stringValue]);
+    }
     
     if (nil == results || results.count == 0) {
         return nil;
@@ -767,7 +773,7 @@ typedef enum {
     NSSortDescriptor * sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"triggerTime" ascending:YES];
     NSSortDescriptor * sortDescriptorByType = [[NSSortDescriptor alloc] initWithKey:@"type" ascending:YES];
     
-    NSPredicate * predicate = [NSPredicate predicateWithFormat:@"(state = 0 AND (type = %d || type = %d) AND triggerTime >= %@ AND triggerTime < %@) OR (state = 0 AND (type = %d || type = %d) AND triggerTime < %@)",ReminderTypeReceive,ReminderTypeReceiveAndNoAlarm,today,tomorrow,ReminderTypeReceive,ReminderTypeReceiveAndNoAlarm,today];
+    NSPredicate * predicate = [NSPredicate predicateWithFormat:@"state = 0 AND triggerTime < %@", tomorrow];
     
     NSArray * sortDescriptors = [NSArray arrayWithObjects:sortDescriptor,sortDescriptorByType,nil];
     request.sortDescriptors = sortDescriptors;
@@ -882,49 +888,37 @@ typedef enum {
 
 - (void)createDefaultReminders {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-    NSString * defaultReminders = [defaults objectForKey:kCreateDefaultReminders];
-    
-    NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
-    NSString * strTriggerTime;
-    [formatter setDateFormat:@"yyyy-MM-dd 23:59:59"];
-    strTriggerTime = [formatter stringFromDate:[NSDate date]];
-    [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    NSString * defaultReminders = nil;
+    defaultReminders = [defaults objectForKey:kCreateDefaultReminders]; 
     
     if (nil == defaultReminders) {
         [[UIApplication sharedApplication] cancelAllLocalNotifications];
         
+         NSDate * createTime = [NSDate date];
+        
+        NSArray * reminderIds = [NSArray arrayWithObjects:@"default1", @"default2", @"default3", nil];
+        NSArray * reminderDesc= [NSArray arrayWithObjects:@"按住最下方按钮创建语音任务", @"手指下拉屏幕创建文字任务", @"向右滑动手指删除任务", nil];
+        
         Reminder * reminder;
         long long userId = [[[UserManager defaultManager] oneselfId] longLongValue];
-//        NSInteger audioLength;
-        for (NSInteger index = 0; index < 4; index++) {
+        long count = reminderIds.count;
+
+        for (NSInteger index = 0; index < count; index++) {
             reminder = (Reminder *)[NSEntityDescription insertNewObjectForEntityForName:kReminderEntity inManagedObjectContext:self.managedObjectContext];
-            if (0 == index) {
-                reminder.id = @"default1";
-                reminder.desc = @"按住最下方按钮创建语音任务";
-            }else if (1 == index) {
-                reminder.id = @"default2";
-                reminder.desc = @"手指下拉屏幕创建文字任务";
-            }else if (2 == index) {
-                reminder.id = @"default3";
-                reminder.desc = @"向右滑动手指删除任务";
-            }else if(3 == index){
-                reminder.id = @"default3";
-                reminder.desc = @"轻触方框完成一个任务";
-            }
             
-//            reminder.audioUrl = [[SoundManager defaultSoundManager] createDefaultAudio:index];
-//            audioLength = [[SoundManager defaultSoundManager] audioTime:reminder.audioUrl];
-//            reminder.audioLength = [NSNumber numberWithInteger:audioLength];
+            reminder.id = [reminderIds objectAtIndex:index];
+            reminder.desc = [reminderDesc objectAtIndex:index];
             reminder.audioUrl = nil;
             reminder.audioLength = 0;
             reminder.userID = [NSNumber numberWithLongLong:userId];;
-            reminder.createTime = [formatter dateFromString:strTriggerTime];
+            reminder.createTime = [createTime dateByAddingTimeInterval:index];
             reminder.latitude = nil;
             reminder.longitude = nil;
-            reminder.type = [NSNumber numberWithInteger:ReminderTypeReceiveAndNoAlarm];
+            reminder.type = [NSNumber numberWithInteger:ReminderTypeReceive];
             reminder.isRead = [NSNumber numberWithBool:YES];
             reminder.isAlarm = [NSNumber numberWithBool:NO];
-            reminder.triggerTime = [NSDate date];
+            // 以十分钟为一个间隔。
+            reminder.triggerTime = [[NSDate date] dateByAddingTimeInterval:(index + 1) * 600];
             [self updateRemindersSizeWith:reminder.triggerTime withOperate:BadgeOperateAdd];
             
             [self synchroniseToStore];

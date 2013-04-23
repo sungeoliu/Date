@@ -65,7 +65,8 @@ typedef enum {
 
 - (void)reloadReminderSize{
     NSLog(@"刷新提醒分类个数。");
-    [self.tableView reloadData];
+    
+    [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
 }
 
 #pragma 事件函数

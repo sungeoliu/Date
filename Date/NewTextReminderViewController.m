@@ -33,8 +33,8 @@
     self.reminder = [[ReminderManager defaultManager] reminder];
     self.receiverId = [NSNumber numberWithLongLong:[[UserManager defaultManager].oneselfId longLongValue]];
     self.receiver = @"自己";
-    self.reminderType = ReminderTypeReceiveAndNoAlarm;
-    self.dateType = DateTypeToday;
+    self.reminderType = ReminderTypeReceive;
+    self.dateType = DateTypeSpecific;
     [self initTriggerTime];
 }
 

@@ -471,9 +471,10 @@
 
 // 收到完成消息处理。
 - (void)handleDoneReminderMessage:(NSNotification *)notification{
+    NSLog(@"收到完成提醒消息");
     Reminder * reminder = [notification.userInfo objectForKey:kReminderObject];
     if (reminder) {
-        [self doneForReminder:reminder];
+        [self performSelectorOnMainThread:@selector(doneForReminder:) withObject:reminder waitUntilDone:NO];
     }
 }
 
@@ -481,16 +482,25 @@
 - (void)doneForReminder:(Reminder *)reminder{
     NSString * prompt = [[NSUserDefaults standardUserDefaults] objectForKey:NeedDisplayPromptKey];
     if (nil == prompt || [prompt isEqualToString:@"YES"]) {
-        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"您可以左侧菜单中找到已完成的任务" delegate:self cancelButtonTitle:@"关闭" otherButtonTitles:@"不再提示", nil];
-        [alert show];
+        // TODO: 应该放到main thread中执行，暂时注释掉。
+//        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"您可以左侧菜单中找到已完成的任务" delegate:self cancelButtonTitle:@"关闭" otherButtonTitles:@"不再提示", nil];
+//        [alert show];
     }
     
-    // 修改提醒状态。
+    NSLog(@"修改提醒状态。");
     if ([reminder.state integerValue] == ReminderStateUnFinish) {
         [self.reminderManager modifyReminder:reminder withState:ReminderStateFinish];
     }
     
     [_tableViewRecognizer removeSideSwipeView:NO];
+    
+    if (_curDeleteIndexPath == nil) {
+        _curDeleteIndexPath = [self indexPathForReminder:reminder];
+        if (_curDeleteIndexPath == nil) {
+            NSLog(@"未找到要删除的提醒对象");
+            return;
+        }
+    }
     
     [[self.group objectForKey:[self.keys objectAtIndex:_curDeleteIndexPath.section]] removeObjectAtIndex:_curDeleteIndexPath.row];
     [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_curDeleteIndexPath] withRowAnimation:UITableViewRowAnimationFade];
@@ -509,6 +519,7 @@
 // 收到删除提醒消息处理。
 - (void)handleDeletingReminderMessage:(NSNotification *)notification{
     Reminder * reminder = [notification.userInfo objectForKey:kReminderObject];
+    NSLog(@"将要删除提醒：%@", reminder.id);
     if (reminder) {
         _curReminder = reminder;
         [self deleteReminderIconClicked:nil];
@@ -594,8 +605,32 @@
     return 0;
 }
 
+- (Reminder *)reminderForIndexPath:(NSIndexPath *)indexPath{
+    return [[self.group objectForKey:[self.keys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+}
+
+// 获取reminder对应的行，用于提醒时间到弹出操作界面直接删除reminder的情况。
+// 因为此时用户没有选择进入某一行， 所以没有_curDeleteIndexPath。
+- (NSIndexPath *)indexPathForReminder:(Reminder *)reminder{
+    NSLog(@"查找对应的IndexPath：%@", reminder.id);
+    for (int i = 0; i < self.keys.count; i ++) {
+        for (int j = 0; j < self.group.count; j++){
+            NSIndexPath * indexPath = [NSIndexPath indexPathForRow:j inSection:i];
+            Reminder * tmpReminder = [self reminderForIndexPath:indexPath];
+            
+            if (tmpReminder == reminder ||
+                [tmpReminder.id isEqualToString:reminder.id]) {
+                NSLog(@"找到要删除提醒对象的位置");
+                return indexPath;
+            }
+        }
+    }
+    
+    return nil;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    Reminder * reminder = [[self.group objectForKey:[self.keys objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+    Reminder * reminder = [self reminderForIndexPath:indexPath];
     
     static NSString * CellIdentifier;
     ReminderBaseCell * cell;
@@ -705,11 +740,22 @@
     return YES;
 }
 
+
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
     if (1 == alertView.tag && buttonIndex != alertView.cancelButtonIndex) {
+        // 删除提醒。
         if ([_userManager isSentToMyself:_curReminder.userID]){
             [self.reminderManager deleteLocalReminder:_curReminder];
             
+            if (_curDeleteIndexPath == nil) {
+                _curDeleteIndexPath = [self indexPathForReminder:_curReminder];
+                if (_curDeleteIndexPath == nil) {
+                    NSLog(@"没有找到对应的提醒。");
+                    return;
+                }
+            }
+            
+            // 当弹出“删除”确认框时，没有设置当前indexPath，所以会崩溃。
             [_tableViewRecognizer removeSideSwipeView:NO];
             [[self.group objectForKey:[self.keys objectAtIndex:_curDeleteIndexPath.section]] removeObjectAtIndex:_curDeleteIndexPath.row];
             [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:_curDeleteIndexPath] withRowAnimation:UITableViewRowAnimationRight];

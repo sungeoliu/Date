@@ -10,6 +10,8 @@
 
 #define LocalString(key)  NSLocalizedString(key, nil)
 
+#define DatePickerMinutesInterval       5
+
 @interface GlobalFunction : NSObject
 
 + (GlobalFunction *)defaultInstance;
@@ -29,6 +31,8 @@
 - (NSString *)custumDateTimeString:(NSDate *)date;
 - (NSString *)custumDayString:(NSDate *)date;
 - (NSString *)custumDateString2:(NSDate *)date;
+
++ (NSDate *)rightAlignedDate;
 
 
 - (NSInteger)diffDay:(NSDate *)date;
